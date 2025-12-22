@@ -1,18 +1,86 @@
-# React + Vite
+# In-Patient History Dynamic Chart Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A specialized medical frontend tool designed for veterinary or clinical environments. This application allows medical staff to manually design and generate structured **Diet** and **Treatment Plan** charts that adjust dynamically based on a patient's admission duration.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* **Dynamic Date Logic**: Automatically generates table columns (Date-wise) based on the calculated range between Admission and Discharge dates.
+* **Real-time Validations**:
+* **Auto-Capitalization**: Names and parameters are automatically formatted to Title Case (e.g., "sabiq hashil" → "Sabiq Hashil").
+* **Smart Date Blocking**: Prevents selection of past dates and ensures Discharge Date is never before Admission Date.
+* **Input Constraints**: File numbers are restricted to numeric values; Cage numbers are forced to uppercase.
 
-## React Compiler
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+* **Medical Plan Customization**:
+* **Diet Plan**: Pre-loaded with standard parameters (Food, Water, Stool, etc.) with the ability to add custom rows.
+* **Treatment Plan**: Detailed medication entry including drug name and dosage (e.g., 2ML).
+* **Frequency Toggle**: Switch between **Once (1x)** and **Twice (2x)** daily marking. "Twice" visually splits the cell for Morning/Evening manual marking.
 
-Note: This will impact Vite dev & build performances.
 
-## Expanding the ESLint configuration
+* **Print-First Design**: Optimized for A4 Landscape output. Interactive UI elements (buttons, selectors) are hidden during printing, while signature blocks are revealed.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tech Stack
+
+* **Framework**: React (Vite)
+* **Styling**: Tailwind CSS
+* **Icons/UI**: Standard HTML5/CSS3 Print Media Queries
+* **State Management**: React Hooks (`useState`, `useEffect`)
+
+## 📂 Project Structure
+
+```text
+src/
+├── components/
+│   ├── Header.jsx           # Page title and print triggers
+│   ├── AdmissionForm.jsx    # Patient metadata and validation logic
+│   ├── DietPlanTable.jsx    # Dynamic Diet grid with 1x/2x toggle
+│   ├── TreatmentPlanTable.jsx # Medication grid with dosage fields
+│   └── SignatureSection.jsx # Print-only footer for approvals
+├── utils/
+│   ├── dateHelpers.js       # Date range calculation logic
+│   └── validations.js       # String formatting and date constraints
+├── App.jsx                  # Main application orchestrator
+└── index.css                # Tailwind directives and @media print rules
+
+```
+
+## 📋 Installation & Setup
+
+1. **Clone the repository**:
+```bash
+git clone "https://github.com/SabiqHashil/InPatient-Chart.git"
+cd inpatient-chart
+
+```
+
+
+2. **Install dependencies**:
+```bash
+npm install
+
+```
+
+
+3. **Run in development mode**:
+```bash
+npm run dev
+
+```
+
+
+4. **Build for production**:
+```bash
+npm run build
+
+```
+
+
+
+## 🖨️ Usage Instructions
+
+1. **Enter Admission Details**: Fill out the patient and doctor info. Start with the **Admission Date** to enable the chart generation.
+2. **Customize Rows**: Use the "+ Add" buttons to include specific medications or diet parameters.
+3. **Set Frequency**: Select "2x" for medications that require both morning and evening administration to split the cell.
+4. **Print to PDF**: Click the "Print Chart" button. In the browser print dialog, ensure "Landscape" orientation is selected for the best layout.
+
+---
