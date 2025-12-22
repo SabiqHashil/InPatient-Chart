@@ -1,0 +1,14 @@
+/* @tailwind base;
+@tailwind components; */
+@tailwind utilities;
+
+/* Custom Print Styles */
+@media print {
+  @page {
+    size: portrait; /* or landscape */
+    margin: 10mm;
+  } /* Landscape is usually better for timelines */
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+}

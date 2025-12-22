@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Remove browser print headers and footers */
+@page {
+  margin: 0.5in;
+  size: A4 portrait;
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}
