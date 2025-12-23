@@ -1,4 +1,3 @@
-import React from "react";
 import { formatName } from "../utils/validations";
 
 const DietPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
@@ -115,7 +114,7 @@ const DietPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
               ))}
 
               {/* Actions */}
-              <td className="border-2 border-blue-300 print:border print:border-gray-800 p-1.5 text-center print:p-0.5 print:text-center print:bg-gray-50 bg-blue-100 rounded-r-lg print:rounded-none">
+              <td className="border-2 border-blue-300 print:border print:border-gray-800 p-1.5 text-center print:p-0.5 print:text-center print:bg-gray-50 bg-blue-100 rounded-r-lg print:rounded-none print:hidden">
                 <select
                   value={row.type}
                   onChange={(e) => onUpdate(row.id, "type", e.target.value)}

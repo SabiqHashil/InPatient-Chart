@@ -1,4 +1,3 @@
-import React from "react";
 import {
   formatName,
   formatFileNumber,
@@ -37,7 +36,7 @@ const InputField = ({
   </div>
 );
 
-const AdmissionForm = ({ data, onChange, totalDays }) => {
+const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     let formattedValue = value;
@@ -71,7 +70,8 @@ const AdmissionForm = ({ data, onChange, totalDays }) => {
         label="File No"
         name="fileNo"
         val={data.fileNo}
-        onChange={handleInputChange}
+        onChange={printMode ? undefined : handleInputChange}
+        readOnly={printMode}
       />
 
       {/* Date fields with 'min' attribute to disable past dates */}
@@ -81,7 +81,8 @@ const AdmissionForm = ({ data, onChange, totalDays }) => {
         type="date"
         val={data.admissionDate}
         min={getTodayDate()}
-        onChange={handleInputChange}
+        onChange={printMode ? undefined : handleInputChange}
+        readOnly={printMode}
       />
       <InputField
         label="Discharge Date"
@@ -89,7 +90,8 @@ const AdmissionForm = ({ data, onChange, totalDays }) => {
         type="date"
         val={data.dischargeDate}
         min={data.admissionDate || getTodayDate()}
-        onChange={handleInputChange}
+        onChange={printMode ? undefined : handleInputChange}
+        readOnly={printMode}
       />
 
       <InputField
@@ -104,25 +106,29 @@ const AdmissionForm = ({ data, onChange, totalDays }) => {
         label="Pet Name"
         name="petName"
         val={data.petName}
-        onChange={handleInputChange}
+        onChange={printMode ? undefined : handleInputChange}
+        readOnly={printMode}
       />
       <InputField
         label="Owner Name"
         name="ownerName"
         val={data.ownerName}
-        onChange={handleInputChange}
+        onChange={printMode ? undefined : handleInputChange}
+        readOnly={printMode}
       />
       <InputField
         label="Doctor Name"
         name="doctor"
         val={data.doctor}
-        onChange={handleInputChange}
+        onChange={printMode ? undefined : handleInputChange}
+        readOnly={printMode}
       />
       <InputField
         label="Doctor Assistant"
         name="assistantName"
         val={data.assistantName}
-        onChange={handleInputChange}
+        onChange={printMode ? undefined : handleInputChange}
+        readOnly={printMode}
       />
 
       {/* Row 3 */}
@@ -131,7 +137,8 @@ const AdmissionForm = ({ data, onChange, totalDays }) => {
           label="Cage No"
           name="cageNo"
           val={data.cageNo}
-          onChange={handleInputChange}
+          onChange={printMode ? undefined : handleInputChange}
+          readOnly={printMode}
         />
       </div>
       <div className="col-span-3">
@@ -139,7 +146,8 @@ const AdmissionForm = ({ data, onChange, totalDays }) => {
           label="Diagnosis"
           name="diagnosis"
           val={data.diagnosis}
-          onChange={handleInputChange}
+          onChange={printMode ? undefined : handleInputChange}
+          readOnly={printMode}
         />
       </div>
     </div>

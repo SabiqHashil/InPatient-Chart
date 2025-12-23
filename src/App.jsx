@@ -11,6 +11,7 @@ import {
   generatePdfFilename,
 } from "./utils/validations";
 import "./App.css";
+import NoteUsage from "./components/Note-Usage";
 
 function App() {
   // --- 1. Header State ---
@@ -96,28 +97,13 @@ function App() {
           />
         </div>
 
-        {/* Print-Only Header (on every page) */}
-        <div className="hidden print:block print:p-6">
-          <Header
-            onPrint={() => window.print()}
-            canPrint={dateCols.length > 0 && isAdmissionFormComplete(header)}
-          />
-        </div>
-
         {/* Content Container - Tables */}
         <div className="print:p-0 print:m-0">
           {dateCols.length > 0 ? (
             (() => {
-              // Check if we exceed single-page row limits
-              const dietRowsExceedLimit =
-                dietRows.length > MAX_DIET_ROWS_PER_PAGE;
-              const treatmentRowsExceedLimit =
-                treatmentRows.length > MAX_TREATMENT_ROWS_PER_PAGE;
-              const shouldPaginate =
-                dietRowsExceedLimit || treatmentRowsExceedLimit;
-
-              // If rows exceed limits, paginate by date. Otherwise show all on one page.
-              const DAYS_PER_PAGE = shouldPaginate ? 14 : dateCols.length;
+              // Paginate by date with a hard limit of 15 days per page for PDF output.
+              // This ensures when there are more than 15 days we generate additional pages.
+              const DAYS_PER_PAGE = 15;
               const pages = Math.ceil(dateCols.length / DAYS_PER_PAGE);
               return (
                 <>
@@ -132,7 +118,7 @@ function App() {
                         className="mb-4 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-6"
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
-                        {/* Print Header on every page */}
+                        {/* Print Header on every page (AdmissionForm only on first page) */}
                         <div className="hidden print:block mb-2">
                           <Header
                             onPrint={() => window.print()}
@@ -141,6 +127,14 @@ function App() {
                               isAdmissionFormComplete(header)
                             }
                           />
+                          {pageIndex === 0 && (
+                            <AdmissionForm
+                              data={header}
+                              onChange={handleHeaderChange}
+                              totalDays={dateCols.length}
+                              printMode={true}
+                            />
+                          )}
                         </div>
                         <DietPlanTable
                           rows={dietRows}
@@ -194,14 +188,10 @@ function App() {
               );
             })()
           ) : (
-            <div className="p-8 print:p-6 text-center py-16 border-2 border-dashed border-blue-200 rounded-lg text-gray-400 m-6 print:m-0 print:rounded-none print:border-0">
-              <p className="text-lg">
-                Please select an{" "}
-                <strong className="text-blue-600">Admission Date</strong> and{" "}
-                <strong className="text-blue-600">Discharge Date</strong> to
-                generate the chart.
-              </p>
-            </div>
+            <>
+              {/* Demo notice - web UI only (hidden in print/PDF) */}
+              <NoteUsage />
+            </>
           )}
         </div>
       </div>

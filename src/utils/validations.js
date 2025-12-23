@@ -47,6 +47,7 @@ export const isAdmissionFormComplete = (header) => {
     "petName",
     "ownerName",
     "doctor",
+    "assistantName",
     "cageNo",
     "diagnosis",
     "admissionDate",
