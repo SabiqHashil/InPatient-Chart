@@ -12,6 +12,7 @@ import {
 } from "../utils/validations";
 import "../App.css";
 import NoteUsage from "../components/Note-Usage";
+import WebFooter from "../components/WebFooter";
 
 function InPatientChart() {
   // --- 1. Header State ---
@@ -81,7 +82,7 @@ function InPatientChart() {
   }, [header.fileNo]);
 
   return (
-    <div className="min-h-screen bg-blue-50 py-4 sm:py-8 print:bg-white print:py-0">
+    <div className="min-h-screen bg-blue-50 py-4 sm:py-8 pb-28 sm:pb-32 print:bg-white print:py-0">
       <div className="max-w-[297mm] mx-auto px-4 sm:px-6 bg-white rounded-lg shadow-2xl print:shadow-none print:rounded-none print:w-full print:max-w-none overflow-hidden">
         {/* UI-Only Header (before tables) */}
         <div className="print:hidden p-4 sm:p-8 border-b-2 border-blue-100 bg-white">
@@ -324,6 +325,10 @@ function InPatientChart() {
               <NoteUsage />
             </>
           )}
+        </div>
+        {/* Web-only sticky footer */}
+        <div className="bottom-0 left-0 right-0 z-40 print:hidden">
+          <WebFooter />
         </div>
       </div>
     </div>

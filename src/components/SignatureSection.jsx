@@ -1,10 +1,10 @@
 
 const SignatureSection = () => {
   return (
-    /* Added 'hidden' to hide from Web UI 
-       Added 'print:flex' to show as a flex container in the PDF/Print view
+    /* Hidden from web UI, shown only in PDF/Print.
+       - Doctor Signature left-aligned, Owner Signature right-aligned.
     */
-    <div className="hidden print:flex mt-8 justify-between px-12 print:mt-auto print:mb-2">
+    <div className="hidden print:flex justify-between items-center mt-8 px-12 print:mt-auto print:mb-2">
       {/* Doctor Signature */}
       <div className="text-center">
         <div className="w-40 border-b-2 border-gray-800 h-6 mb-1"></div>

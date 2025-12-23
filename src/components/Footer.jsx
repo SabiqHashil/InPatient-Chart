@@ -30,7 +30,6 @@ const Footer = ({ isLastPage = true }) => {
       {/* Bottom line - only on last page */}
       {isLastPage && (
         <div className="mt-2 pt-2 border-t border-gray-200 text-center text-xs text-gray-500">
-          <p>© 2025 MyPetsa Veterinary Clinic. All rights reserved.</p>
           <p className="mt-0.5 text-xs">
             Generated on {new Date().toLocaleDateString()}
           </p>
