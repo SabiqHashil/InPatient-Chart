@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+﻿import React, { useState, useRef } from "react";
 import Header from "./components/Header";
 import AdmissionForm from "./components/AdmissionForm";
 import DietPlanTable from "./components/DietPlanTable";
@@ -102,16 +102,55 @@ function App() {
           {dateCols.length > 0 ? (
             (() => {
               // Paginate by date with a hard limit of 15 days per page for PDF output.
-              // This ensures when there are more than 15 days we generate additional pages.
+              // Also paginate diet and treatment rows independently so overflowing
+              // rows continue on subsequent pages. The number of final pages is
+              // the maximum required by dates, diet rows, or treatment rows.
               const DAYS_PER_PAGE = 15;
-              const pages = Math.ceil(dateCols.length / DAYS_PER_PAGE);
+              const dietRowsPerPage = MAX_DIET_ROWS_PER_PAGE;
+              const treatmentRowsPerPage = MAX_TREATMENT_ROWS_PER_PAGE;
+
+              const datePages = Math.max(
+                1,
+                Math.ceil(dateCols.length / DAYS_PER_PAGE)
+              );
+              const dietPages = Math.max(
+                1,
+                Math.ceil(dietRows.length / dietRowsPerPage)
+              );
+              const treatmentPages = Math.max(
+                1,
+                Math.ceil(treatmentRows.length / treatmentRowsPerPage)
+              );
+
+              const pages = Math.max(datePages, dietPages, treatmentPages);
+
               return (
                 <>
                   {Array.from({ length: pages }).map((_, pageIndex) => {
-                    const start = pageIndex * DAYS_PER_PAGE;
-                    const end = start + DAYS_PER_PAGE;
-                    const slice = dateCols.slice(start, end);
+                    // Date slice: if there are fewer date-pages than total pages,
+                    // repeat the last available date slice on remaining pages so
+                    // the table headers still show meaningful columns.
+                    // Advance date columns per page so page 0 shows dates [0..DAYS_PER_PAGE-1],
+                    // page 1 shows the next slice, etc. If no dates remain the slice will be empty.
+                    const dateStart = pageIndex * DAYS_PER_PAGE;
+                    const dateEnd = dateStart + DAYS_PER_PAGE;
+                    const slice = dateCols.slice(dateStart, dateEnd);
+
+                    // Rows slices for this page
+                    const dietStart = pageIndex * dietRowsPerPage;
+                    const dietSlice = dietRows.slice(
+                      dietStart,
+                      dietStart + dietRowsPerPage
+                    );
+
+                    const treatmentStart = pageIndex * treatmentRowsPerPage;
+                    const treatmentSlice = treatmentRows.slice(
+                      treatmentStart,
+                      treatmentStart + treatmentRowsPerPage
+                    );
+
                     const isLast = pageIndex === pages - 1;
+
                     return (
                       <div
                         key={pageIndex}
@@ -136,46 +175,51 @@ function App() {
                             />
                           )}
                         </div>
-                        <DietPlanTable
-                          rows={dietRows}
-                          dateCols={slice}
-                          onUpdate={(id, field, val) =>
-                            updateRow(setDietRows, dietRows, id, field, val)
-                          }
-                          onRemove={(id) =>
-                            removeRow(setDietRows, dietRows, id)
-                          }
-                          onAdd={() =>
-                            addRow(setDietRows, dietRows, {
-                              label: "",
-                              type: "Once",
-                            })
-                          }
-                        />
 
-                        <TreatmentPlanTable
-                          rows={treatmentRows}
-                          dateCols={slice}
-                          onUpdate={(id, field, val) =>
-                            updateRow(
-                              setTreatmentRows,
-                              treatmentRows,
-                              id,
-                              field,
-                              val
-                            )
-                          }
-                          onRemove={(id) =>
-                            removeRow(setTreatmentRows, treatmentRows, id)
-                          }
-                          onAdd={() =>
-                            addRow(setTreatmentRows, treatmentRows, {
-                              label: "",
-                              dose: "",
-                              type: "Twice",
-                            })
-                          }
-                        />
+                        {(pageIndex === 0 || dietSlice.length > 0) && (
+                          <DietPlanTable
+                            rows={dietSlice}
+                            dateCols={slice}
+                            onUpdate={(id, field, val) =>
+                              updateRow(setDietRows, dietRows, id, field, val)
+                            }
+                            onRemove={(id) =>
+                              removeRow(setDietRows, dietRows, id)
+                            }
+                            onAdd={() =>
+                              addRow(setDietRows, dietRows, {
+                                label: "",
+                                type: "Once",
+                              })
+                            }
+                          />
+                        )}
+
+                        {(pageIndex === 0 || treatmentSlice.length > 0) && (
+                          <TreatmentPlanTable
+                            rows={treatmentSlice}
+                            dateCols={slice}
+                            onUpdate={(id, field, val) =>
+                              updateRow(
+                                setTreatmentRows,
+                                treatmentRows,
+                                id,
+                                field,
+                                val
+                              )
+                            }
+                            onRemove={(id) =>
+                              removeRow(setTreatmentRows, treatmentRows, id)
+                            }
+                            onAdd={() =>
+                              addRow(setTreatmentRows, treatmentRows, {
+                                label: "",
+                                dose: "",
+                                type: "Twice",
+                              })
+                            }
+                          />
+                        )}
 
                         <SignatureSection />
 
