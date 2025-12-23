@@ -1,3 +1,4 @@
+import React from "react";
 import {
   formatName,
   formatFileNumber,
@@ -5,7 +6,6 @@ import {
   getTodayDate,
 } from "../utils/validations";
 
-// Move InputField outside the main component to avoid creating components during render
 const InputField = ({
   label,
   name,
@@ -15,12 +15,12 @@ const InputField = ({
   min,
   onChange,
 }) => (
-  <div className="flex flex-col">
-    <label className="font-semibold text-xs uppercase text-blue-600 mb-1.5 tracking-wider">
+  <div className="flex flex-col w-full">
+    <label className="font-bold text-[10px] sm:text-xs uppercase text-blue-700 mb-0.5 sm:mb-1.5 tracking-tight">
       {label}
     </label>
     {readOnly ? (
-      <div className="p-2.5 bg-blue-100 border-2 border-blue-200 rounded font-bold text-blue-900 h-10 flex items-center text-sm">
+      <div className="p-1.5 sm:p-2 bg-blue-100 border border-blue-200 rounded font-bold text-blue-900 h-8 sm:h-9 flex items-center text-xs sm:text-sm overflow-hidden truncate">
         {val ?? ""}
       </div>
     ) : (
@@ -30,7 +30,7 @@ const InputField = ({
         value={val ?? ""}
         min={min}
         onChange={onChange}
-        className="border-2 border-gray-300 p-2.5 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all print:border-0 print:border-b print:rounded-none print:px-0 print:bg-transparent hover:border-blue-400"
+        className="border border-gray-300 p-1.5 sm:p-2 rounded text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 outline-none hover:border-blue-400 bg-white h-8 sm:h-9 transition-all"
       />
     )}
   </div>
@@ -40,8 +40,6 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     let formattedValue = value;
-
-    // Apply specific validation logic based on field name
     if (
       ["petName", "ownerName", "doctor", "assistantName", "diagnosis"].includes(
         name
@@ -53,35 +51,57 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
     } else if (name === "cageNo") {
       formattedValue = formatCageNo(value);
     }
-
-    // Call the parent onChange with the formatted value
-    onChange({
-      target: {
-        name,
-        value: formattedValue,
-      },
-    });
+    onChange({ target: { name, value: formattedValue } });
   };
 
   return (
-    <div className="grid grid-cols-4 gap-3 mb-6 border-2 border-blue-200 p-6 rounded-lg bg-blue-50 shadow-md print:shadow-none print:border-0 print:bg-white print:border-none print:p-0 print:gap-1 print:mb-4">
-      {/* Row 1 */}
+    <div
+      className="
+      /* Layout Config */
+      grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 
+      gap-x-3 gap-y-3 sm:gap-4 mb-4 p-4 sm:p-6 rounded-lg 
+      border-2 border-blue-200 bg-blue-50 shadow-md 
+      /* Print Config */
+      print:shadow-none print:border-0 print:bg-white print:p-0 print:gap-2 print:mb-4
+    "
+    >
+      {/* 1. Administrative Details */}
       <InputField
         label="File No"
         name="fileNo"
         val={data.fileNo}
-        onChange={printMode ? undefined : handleInputChange}
+        onChange={handleInputChange}
         readOnly={printMode}
       />
-
-      {/* Date fields with 'min' attribute to disable past dates */}
+      <InputField
+        label="Pet Name"
+        name="petName"
+        val={data.petName}
+        onChange={handleInputChange}
+        readOnly={printMode}
+      />
+      <InputField
+        label="Owner Name"
+        name="ownerName"
+        val={data.ownerName}
+        onChange={handleInputChange}
+        readOnly={printMode}
+      />
+      <InputField
+        label="Cage No"
+        name="cageNo"
+        val={data.cageNo}
+        onChange={handleInputChange}
+        readOnly={printMode}
+      />
+      {/* 2. Patient & Staff Details */}
       <InputField
         label="Admission Date"
         name="admissionDate"
         type="date"
         val={data.admissionDate}
         min={getTodayDate()}
-        onChange={printMode ? undefined : handleInputChange}
+        onChange={handleInputChange}
         readOnly={printMode}
       />
       <InputField
@@ -90,7 +110,7 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         type="date"
         val={data.dischargeDate}
         min={data.admissionDate || getTodayDate()}
-        onChange={printMode ? undefined : handleInputChange}
+        onChange={handleInputChange}
         readOnly={printMode}
       />
 
@@ -101,52 +121,31 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         readOnly={true}
       />
 
-      {/* Row 2 */}
       <InputField
-        label="Pet Name"
-        name="petName"
-        val={data.petName}
-        onChange={printMode ? undefined : handleInputChange}
-        readOnly={printMode}
-      />
-      <InputField
-        label="Owner Name"
-        name="ownerName"
-        val={data.ownerName}
-        onChange={printMode ? undefined : handleInputChange}
-        readOnly={printMode}
-      />
-      <InputField
-        label="Doctor Name"
+        label="Doctor"
         name="doctor"
         val={data.doctor}
-        onChange={printMode ? undefined : handleInputChange}
+        onChange={handleInputChange}
         readOnly={printMode}
       />
       <InputField
-        label="Doctor Assistant"
+        label="Assistant"
         name="assistantName"
         val={data.assistantName}
-        onChange={printMode ? undefined : handleInputChange}
+        onChange={handleInputChange}
         readOnly={printMode}
       />
 
-      {/* Row 3 */}
-      <div className="col-span-1">
-        <InputField
-          label="Cage No"
-          name="cageNo"
-          val={data.cageNo}
-          onChange={printMode ? undefined : handleInputChange}
-          readOnly={printMode}
-        />
-      </div>
-      <div className="col-span-3">
+      {/* 3. Diagnosis Section (Full Width)
+          - On mobile (2 cols): col-span-2
+          - On large (3 cols): col-span-3 
+      */}
+      <div className="col-span-2 lg:col-span-3">
         <InputField
           label="Diagnosis"
           name="diagnosis"
           val={data.diagnosis}
-          onChange={printMode ? undefined : handleInputChange}
+          onChange={handleInputChange}
           readOnly={printMode}
         />
       </div>
