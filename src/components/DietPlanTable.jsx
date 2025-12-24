@@ -45,8 +45,8 @@ const DietPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
         - -mx-4 pulls the table to the screen edges on mobile
         - overflow-x-auto allows side-scrolling without breaking the page width
       */}
-      <div className="overflow-x-auto -mx-4 sm:mx-0 shadow-sm rounded-lg border border-blue-200 sm:border-0">
-        <table className="min-w-[700px] w-full border-collapse border-2 border-blue-300 text-sm print:text-[10px] print:border print:border-gray-800">
+      <div className="overflow-x-auto print:overflow-visible print:w-full">
+        <table className="min-w-full w-full border-collapse border-2 border-blue-300 text-sm print:text-[10px] print:border print:border-gray-800 print:table-fixed">
           <thead>
             <tr className="bg-blue-600 text-white print:bg-gray-100 print:text-gray-900">
               <th className="border-2 border-blue-300 print:border print:border-gray-800 p-2 sm:p-3 text-left font-semibold w-40 sm:w-48">

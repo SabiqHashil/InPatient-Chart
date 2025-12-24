@@ -1,22 +1,25 @@
+import React from "react";
 
 const Footer = ({ isLastPage = true }) => {
   return (
-    <div className="hidden print:block mt-4 pt-2 border-t border-gray-300">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 text-xs text-gray-600">
+    <div className="hidden print:block mt-2 pt-1.5 border-t border-gray-300">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-2 text-[7px] text-gray-600">
         {/* Left: Logo & Clinic Name */}
         <div className="flex-1 flex flex-col items-start">
           <img
             src="/mypetsa-logo.png"
             alt="MyPetsa Logo"
-            className="w-6 h-6 md:w-8 md:h-8 object-contain mb-1"
+            className="w-5 h-5 object-contain mb-0.5"
           />
-          <p className="font-bold text-gray-800 text-xs">MyPetsa</p>
-          <p className="text-gray-500 text-xs">Professional Pet Care</p>
+          <p className="font-bold text-gray-800 text-[8px]">MyPetsa</p>
+          <p className="text-gray-500 text-[7px]">Professional Pet Care</p>
         </div>
 
         {/* Right: Clinic Details */}
-        <div className="flex-1 text-right text-xs">
-          <h3 className="font-bold text-gray-800 mb-1">Clinic Information</h3>
+        <div className="flex-1 text-right text-[7px]">
+          <h3 className="font-bold text-gray-800 mb-0.5 text-[8px]">
+            Clinic Information
+          </h3>
           <p className="font-semibold text-gray-700">
             MyPetsa Veterinary Clinic
           </p>
@@ -29,8 +32,8 @@ const Footer = ({ isLastPage = true }) => {
 
       {/* Bottom line - only on last page */}
       {isLastPage && (
-        <div className="mt-2 pt-2 border-t border-gray-200 text-center text-xs text-gray-500">
-          <p className="mt-0.5 text-xs">
+        <div className="mt-1 pt-1 border-t border-gray-200 text-center text-[7px] text-gray-500">
+          <p className="mt-0.5">
             Generated on {new Date().toLocaleDateString()}
           </p>
         </div>

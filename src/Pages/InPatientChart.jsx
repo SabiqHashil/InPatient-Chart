@@ -26,6 +26,7 @@ function InPatientChart() {
     diagnosis: "",
     admissionDate: "",
     dischargeDate: "",
+    weight: "",
   });
 
   const dateCols = React.useMemo(() => {
@@ -36,8 +37,6 @@ function InPatientChart() {
   }, [header.admissionDate, header.dischargeDate]);
 
   // --- 2. Row States ---
-  // Default Diet Rows
-
   const [dietRows, setDietRows] = useState([
     { id: 1, label: "Food", type: "Once" },
     { id: 2, label: "Water", type: "Once" },
@@ -50,7 +49,6 @@ function InPatientChart() {
     { id: 101, label: "", dose: "", type: "Twice" },
   ]);
 
-  // simple id generator to avoid impure calls during render
   const nextId = useRef(1000);
 
   // Max rows per page to keep everything on single A4 page
@@ -62,7 +60,6 @@ function InPatientChart() {
     setHeader({ ...header, [e.target.name]: e.target.value });
   };
 
-  // Generic Row Updaters
   const updateRow = (setRows, rows, id, field, value) => {
     setRows(rows.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
   };
@@ -71,7 +68,7 @@ function InPatientChart() {
     setRows(rows.filter((r) => r.id !== id));
   };
 
-  const addRow = (setRows, defaultObj) => {
+  const addRow = (setRows, rows, defaultObj) => {
     setRows((prev) => [...prev, { ...defaultObj, id: ++nextId.current }]);
   };
 
@@ -102,16 +99,6 @@ function InPatientChart() {
         <div className="print:p-0 print:m-0">
           {dateCols.length > 0 ? (
             (() => {
-              // Smart pagination logic:
-              // PRIMARY: Date pagination (15 days per page) - when days > 15, show remaining days on next page with same tables
-              // SECONDARY: Row overflow (tables exceed row limits) - when rows overflow, show on dedicated pages
-              // - Page 1: Diet + Treatment with smart row distribution
-              //   * If Treatment 1-2 rows: Diet max 8 rows
-              //   * If Treatment 3-4 rows: Diet max 6 rows
-              //   * If Treatment 5+ rows: Diet max 5 rows
-              // - If days > 15: Next date pages show same tables with advancing 15-day date slices
-              // - If rows overflow after date pages: Dedicated overflow pages for excess rows
-
               const DAYS_PER_PAGE = 15;
               const DIET_OVERFLOW_ROW_LIMIT = MAX_DIET_ROWS_PER_PAGE + 1;
               const TREATMENT_OVERFLOW_ROW_LIMIT =
@@ -133,7 +120,7 @@ function InPatientChart() {
                 Math.ceil(dateCols.length / DAYS_PER_PAGE)
               );
 
-              // Calculate row overflow pages (only for rows exceeding page 1 capacity)
+              // Calculate row overflow pages
               let dietOverflowPages = 0;
               if (dietRows.length > page1DietMax) {
                 const remainingDiet = dietRows.length - page1DietMax;
@@ -151,38 +138,30 @@ function InPatientChart() {
                 );
               }
 
-              // Total pages: date pages first, then row overflow pages
               const pages =
                 datePages + dietOverflowPages + treatmentOverflowPages;
 
               return (
                 <>
                   {Array.from({ length: pages }).map((_, pageIndex) => {
-                    // Date slice logic:
-                    // - For date pages: advance 15 days per page
-                    // - For overflow pages: use LAST date slice from the date pages
                     let slice;
                     if (pageIndex < datePages) {
-                      // Date pages: advance date columns normally
                       const dateStart = pageIndex * DAYS_PER_PAGE;
                       const dateEnd = dateStart + DAYS_PER_PAGE;
                       slice = dateCols.slice(dateStart, dateEnd);
                     } else {
-                      // Overflow pages: use LAST date slice (from final date page)
                       const lastDatePageIndex = datePages - 1;
                       const dateStart = lastDatePageIndex * DAYS_PER_PAGE;
                       const dateEnd = dateStart + DAYS_PER_PAGE;
                       slice = dateCols.slice(dateStart, dateEnd);
                     }
 
-                    // Determine which tables to show and their row slices
                     let dietSlice = [];
                     let treatmentSlice = [];
                     let showDiet = false;
                     let showTreatment = false;
 
                     if (pageIndex < datePages) {
-                      // Date pages: Show same tables with advancing date columns
                       showDiet = true;
                       showTreatment = true;
                       dietSlice = dietRows.slice(0, page1DietMax);
@@ -191,14 +170,11 @@ function InPatientChart() {
                         page1TreatmentMax
                       );
                     } else {
-                      // Overflow pages: Show both Diet and Treatment with overflow rows + advancing date columns
                       showDiet = true;
                       showTreatment = true;
 
-                      // Calculate which overflow page we're on (0-indexed)
                       const overflowPageIndex = pageIndex - datePages;
 
-                      // Diet rows: handle overflow with advancing through overflow rows
                       if (dietRows.length > page1DietMax) {
                         const dietOverflowIndex = Math.floor(
                           overflowPageIndex /
@@ -213,7 +189,6 @@ function InPatientChart() {
                         dietSlice = [];
                       }
 
-                      // Treatment rows: handle overflow with advancing through overflow rows
                       if (treatmentRows.length > page1TreatmentMax) {
                         const treatmentOverflowIndex = Math.floor(
                           overflowPageIndex /
@@ -232,7 +207,6 @@ function InPatientChart() {
                         treatmentSlice = [];
                       }
 
-                      // Hide tables if no rows to display
                       if (dietSlice.length === 0) showDiet = false;
                       if (treatmentSlice.length === 0) showTreatment = false;
                     }
@@ -242,11 +216,11 @@ function InPatientChart() {
                     return (
                       <div
                         key={pageIndex}
-                        className="mb-4 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6"
+                        className="mb-4 print:p-4 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6"
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
-                        {/* Print Header on every page (AdmissionForm only on first page) */}
-                        <div className="hidden print:block mb-2">
+                        {/* Print Header on every page */}
+                        <div className="hidden print:block mb-1">
                           <Header
                             onPrint={() => window.print()}
                             canPrint={
@@ -310,8 +284,6 @@ function InPatientChart() {
                         )}
 
                         <SignatureSection />
-
-                        {/* Print Footer on every page */}
                         <Footer isLastPage={isLast} />
                       </div>
                     );
@@ -320,12 +292,10 @@ function InPatientChart() {
               );
             })()
           ) : (
-            <>
-              {/* Demo notice - web UI only (hidden in print/PDF) */}
-              <NoteUsage />
-            </>
+            <NoteUsage />
           )}
         </div>
+
         {/* Web-only sticky footer */}
         <div className="bottom-0 left-0 right-0 z-40 print:hidden">
           <WebFooter />

@@ -19,6 +19,13 @@ export const formatFileNumber = (value) => {
   return String(value).replace(/\D/g, ""); // Removes any non-digit character
 };
 
+// Function to allow only numbers for Weight input
+export const formatWeight = (value) => {
+  if (value == null) return "";
+  // Remove any non-digit and allow optional decimal point
+  return String(value).replace(/[^0-9.]/g, "");
+};
+
 // Function to format Cage No (Example: IP 1)
 export const formatCageNo = (value) => {
   if (!value) return "";
@@ -52,6 +59,7 @@ export const isAdmissionFormComplete = (header) => {
     "diagnosis",
     "admissionDate",
     "dischargeDate",
+    "weight"
   ];
   return requiredFields.every((field) => {
     const val = header[field];

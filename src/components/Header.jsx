@@ -2,7 +2,7 @@ import Logo from "./Logo";
 
 const Header = ({ onPrint, canPrint = true }) => {
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center mb-4 border-b-2 border-blue-200 pb-3 print:border-b print:pb-2 print:mb-2 gap-3">
+    <div className="flex flex-col sm:flex-row justify-between items-center mb-4 border-b-2 border-blue-200 pb-3 print:border-b print:border-gray-800 print:pb-1.5 print:mb-2 gap-3">
       <Logo />
       {canPrint && (
         <button
