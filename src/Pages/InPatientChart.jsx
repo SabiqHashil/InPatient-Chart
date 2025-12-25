@@ -105,13 +105,13 @@ function InPatientChart() {
                 MAX_TREATMENT_ROWS_PER_PAGE + 1;
 
               // Calculate smart row distribution for page 1
-              let page1DietMax = 5;
+              let page1DietMax = 7;
               let page1TreatmentMax = 4;
 
-              if (treatmentRows.length <= 2) {
+              if (treatmentRows.length <= 3) {
                 page1DietMax = 8;
-              } else if (treatmentRows.length <= 4) {
-                page1DietMax = 6;
+              } else if (treatmentRows.length <= 6) {
+                page1DietMax = 8;
               }
 
               // Calculate date pages (15 days per page)

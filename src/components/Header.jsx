@@ -31,7 +31,7 @@ const Header = () => {
               IP <span>Chart</span>
             </h1>
             <p className="text-[10px] font-bold uppercase tracking-widest mt-1">
-              Medical Records System
+              Observation Record
             </p>
           </div>
         </div>
