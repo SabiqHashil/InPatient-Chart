@@ -2,7 +2,7 @@ import Logo from "./Logo";
 
 const PDFHeader = () => {
   return (
-    <div className="flex flex-col gap-4 mb-6 print:mx-5">
+    <div className="flex flex-col gap-4 mb-2 print:mx-5">
       {/* --- Letterhead Section (PDF ONLY) --- */}
       <div className="hidden print:flex flex-row justify-between items-center gap-0 border-b-2 border-green-500 pb-2 mb-2">
         {/* Left Side: English Clinic Branding */}
