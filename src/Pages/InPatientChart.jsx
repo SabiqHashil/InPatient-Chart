@@ -18,18 +18,17 @@ import WebHeader from "../components/WebHeader";
 function InPatientChart() {
   // --- 1. Header State ---
   const [header, setHeader] = useState({
-    fileNo: "",
-    petName: "",
-    ownerName: "",
-    doctor: "",
-    assistantName: "",
-    cageNo: "",
-    diagnosis: "",
-    admissionDate: "",
-    dischargeDate: "",
-    weight: "",
+    fileNo: "IP-2025-0148",
+    petName: "Bruno",
+    ownerName: "Ahmed Rahman",
+    doctor: "Dr. Ayesha Khan",
+    assistantName: "Naveen K",
+    cageNo: "C-12",
+    diagnosis: "Acute Gastroenteritis",
+    admissionDate: "25-Dec-2025",
+    dischargeDate: "30-Dec-2025",
+    weight: "4.8",
   });
-
   const dateCols = React.useMemo(() => {
     if (header.admissionDate && header.dischargeDate) {
       return getDatesInRange(header.admissionDate, header.dischargeDate);
@@ -82,7 +81,7 @@ function InPatientChart() {
   return (
     <div className="min-h-screen bg-blue-50 py-4 sm:py-8 pb-28 sm:pb-32 print:bg-white print:py-0">
       <div className="max-w-[297mm] mx-auto px-4 sm:px-6 bg-white rounded-lg shadow-2xl print:shadow-none print:rounded-none print:w-full print:max-w-none overflow-hidden">
-       {/* UI-Only Header (before tables) */}
+        {/* UI-Only Header (before tables) */}
         <div className="print:hidden p-4 sm:p-8 border-b-2 border-blue-100 bg-white">
           <WebHeader
             onPrint={() => window.print()}
@@ -217,75 +216,97 @@ function InPatientChart() {
                     return (
                       <div
                         key={pageIndex}
-                        className="mb-4 print:p-4 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6"
+                        className="print-page mb-4 print:mb-0 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6 print:h-[297mm] print:box-border print:flex print:flex-col"
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
-                        {/* Print Header on every page */}
-                        <div className="hidden print:block mb-1">
-                          <Header
-                            onPrint={() => window.print()}
-                            canPrint={
-                              dateCols.length > 0 &&
-                              isAdmissionFormComplete(header)
-                            }
-                          />
-                          {pageIndex === 0 && (
-                            <AdmissionForm
-                              data={header}
-                              onChange={handleHeaderChange}
-                              totalDays={dateCols.length}
-                              printMode={true}
+                        {/* --- PRINT HEADER --- */}
+                        {pageIndex === 0 ? (
+                          <div className="hidden print:block print-header mb-2">
+                            <Header
+                              onPrint={() => window.print()}
+                              canPrint={
+                                dateCols.length > 0 &&
+                                isAdmissionFormComplete(header)
+                              }
+                            />
+                            {/* Only first page shows AdmissionForm */}
+                            {pageIndex === 0 && (
+                              <AdmissionForm
+                                data={header}
+                                onChange={handleHeaderChange}
+                                totalDays={dateCols.length}
+                                printMode={true}
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          <div className="hidden print:block print-header mb-2">
+                            {/* Only Header on other pages, no AdmissionForm */}
+                            <Header
+                              onPrint={() => window.print()}
+                              canPrint={
+                                dateCols.length > 0 &&
+                                isAdmissionFormComplete(header)
+                              }
+                            />
+                          </div>
+                        )}
+
+                        {/* Tables Container with flex-grow to fill space */}
+                        <div className="print:grow print:overflow-hidden print:mt-48">
+                          {showDiet && dietSlice.length > 0 && (
+                            <DietPlanTable
+                              rows={dietSlice}
+                              dateCols={slice}
+                              onUpdate={(id, field, val) =>
+                                updateRow(setDietRows, dietRows, id, field, val)
+                              }
+                              onRemove={(id) =>
+                                removeRow(setDietRows, dietRows, id)
+                              }
+                              onAdd={() =>
+                                addRow(setDietRows, dietRows, {
+                                  label: "",
+                                  type: "Once",
+                                })
+                              }
+                            />
+                          )}
+
+                          {showTreatment && treatmentSlice.length > 0 && (
+                            <TreatmentPlanTable
+                              rows={treatmentSlice}
+                              dateCols={slice}
+                              onUpdate={(id, field, val) =>
+                                updateRow(
+                                  setTreatmentRows,
+                                  treatmentRows,
+                                  id,
+                                  field,
+                                  val
+                                )
+                              }
+                              onRemove={(id) =>
+                                removeRow(setTreatmentRows, treatmentRows, id)
+                              }
+                              onAdd={() =>
+                                addRow(setTreatmentRows, treatmentRows, {
+                                  label: "",
+                                  dose: "",
+                                  type: "Twice",
+                                })
+                              }
                             />
                           )}
                         </div>
 
-                        {showDiet && dietSlice.length > 0 && (
-                          <DietPlanTable
-                            rows={dietSlice}
-                            dateCols={slice}
-                            onUpdate={(id, field, val) =>
-                              updateRow(setDietRows, dietRows, id, field, val)
-                            }
-                            onRemove={(id) =>
-                              removeRow(setDietRows, dietRows, id)
-                            }
-                            onAdd={() =>
-                              addRow(setDietRows, dietRows, {
-                                label: "",
-                                type: "Once",
-                              })
-                            }
-                          />
-                        )}
-
-                        {showTreatment && treatmentSlice.length > 0 && (
-                          <TreatmentPlanTable
-                            rows={treatmentSlice}
-                            dateCols={slice}
-                            onUpdate={(id, field, val) =>
-                              updateRow(
-                                setTreatmentRows,
-                                treatmentRows,
-                                id,
-                                field,
-                                val
-                              )
-                            }
-                            onRemove={(id) =>
-                              removeRow(setTreatmentRows, treatmentRows, id)
-                            }
-                            onAdd={() =>
-                              addRow(setTreatmentRows, treatmentRows, {
-                                label: "",
-                                dose: "",
-                                type: "Twice",
-                              })
-                            }
-                          />
-                        )}
-
-                        <SignatureSection />
-                        <Footer isLastPage={isLast} />
+                        {/* Footer at bottom */}
+                        <div className="print:mt-auto">
+                          <SignatureSection />
+                          <div className="print-footer">
+                            <Footer isLastPage={isLast} />
+                          </div>
+                        </div>
                       </div>
                     );
                   })}

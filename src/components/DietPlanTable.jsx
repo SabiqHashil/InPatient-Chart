@@ -49,19 +49,19 @@ const DietPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
         <table className="min-w-full w-full border-collapse border-2 border-blue-300 text-sm print:text-[10px] print:border print:border-gray-800 print:table-fixed">
           <thead>
             <tr className="bg-blue-600 text-white print:bg-gray-100 print:text-gray-900">
-              <th className="border-2 border-blue-300 print:border print:border-gray-800 p-2 sm:p-3 text-left font-semibold w-40 sm:w-48">
+              <th className="border-2 border-blue-300 print:border print:border-gray-800 p-1 sm:p-2 text-left font-semibold w-28 sm:w-32">
                 Parameters
               </th>
               {dateCols.map((date, i) => (
                 <th
                   key={i}
-                  className="border-2 border-blue-300 print:border print:border-gray-800 p-2 text-center font-bold text-[10px] sm:text-xs"
+                  className="border-2 border-blue-300 print:border print:border-gray-800 p-1 text-center font-bold text-[10px] sm:text-xs"
                 >
                   {date}
                 </th>
               ))}
               <th className="border-2 border-blue-300 p-2 w-20 print:hidden">
-                Freq/Act
+                Actions
               </th>
             </tr>
           </thead>
@@ -72,7 +72,7 @@ const DietPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
                 className={idx % 2 === 0 ? "bg-white" : "bg-blue-50/50"}
               >
                 {/* Parameter Name */}
-                <td className="border-2 border-blue-300 print:border print:border-gray-800 p-2 sm:p-3">
+                <td className="border-2 border-blue-300 print:border print:border-gray-800 p-1 sm:p-2 h-16 print:h-auto print:py-1">
                   <input
                     type="text"
                     value={row.label ?? ""}
@@ -88,7 +88,7 @@ const DietPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
                 {dateCols.map((_, i) => (
                   <td
                     key={i}
-                    className="border-2 border-blue-300 print:border print:border-gray-800 p-0 h-10 sm:h-12 relative"
+                    className="border-2 border-blue-300 print:border print:border-gray-800 p-0 h-5 print:h-auto print:min-h-[20px] relative"
                   >
                     {row.type === "Twice" && (
                       <div className="h-full w-full absolute inset-0 pointer-events-none">

@@ -1,14 +1,43 @@
 @import "tailwindcss";
 
-/* Remove browser print headers and footers */
-@page {
-  margin: 0.5in;
-  size: A4 portrait;
-}
-
 @media print {
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   body {
     margin: 0;
     padding: 0;
+  }
+  
+  /* Reserve space for header & footer */
+  .print-page {
+    padding-top: 120px; /* height of Header */
+    padding-bottom: 90px; /* height of Footer */
+    position: relative;
+  }
+
+  /* Fixed Header */
+  .print-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: white;
+    z-index: 999;
+  }
+
+  /* Fixed Footer */
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 90px;
+    background: white;
+    z-index: 999;
   }
 }
