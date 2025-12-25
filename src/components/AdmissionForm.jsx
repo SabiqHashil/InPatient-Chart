@@ -63,7 +63,7 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
       grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 
       gap-x-3 gap-y-3 sm:gap-4 mb-4 p-4 sm:p-6 rounded-lg 
       border-2 border-blue-200 bg-blue-50 shadow-md 
-      print:shadow-none print:border print:border-gray-300 print:bg-white print:p-2 print:gap-x-2 print:gap-y-1.5 print:mb-2 print:grid-cols-4
+      print:shadow-none print:border print:border-gray-300 print:bg-white print:p-2 print:gap-x-2 print:gap-y-1.5 print:mb-2 print:grid-cols-4 print:mx-5
     "
     >
       {/* 1. Administrative Details */}
@@ -81,13 +81,6 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         onChange={handleInputChange}
         readOnly={printMode}
       />
-      <InputField
-        label="Weight"
-        name="weight"
-        val={data.weight}
-        onChange={handleInputChange}
-        readOnly={printMode}
-      />
 
       <InputField
         label="Owner Name"
@@ -96,10 +89,11 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         onChange={handleInputChange}
         readOnly={printMode}
       />
+
       <InputField
-        label="Cage No"
-        name="cageNo"
-        val={data.cageNo}
+        label="Weight"
+        name="weight"
+        val={data.weight}
         onChange={handleInputChange}
         readOnly={printMode}
       />
@@ -143,7 +137,13 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         onChange={handleInputChange}
         readOnly={printMode}
       />
-
+      <InputField
+        label="Cage No"
+        name="cageNo"
+        val={data.cageNo}
+        onChange={handleInputChange}
+        readOnly={printMode}
+      />
       {/* 3. Diagnosis Section (Full Width) */}
       <div className="col-span-2 lg:col-span-3 print:col-span-3">
         <InputField

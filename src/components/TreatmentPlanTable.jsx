@@ -111,7 +111,7 @@ const TreatmentPlanTable = ({
                 {dateCols.map((_, i) => (
                   <td
                     key={i}
-                    className="border-2 border-blue-300 print:border print:border-gray-800 p-0 h-10 sm:h-12 print:h-auto print:min-h-[28px] relative"
+                    className="border-2 border-blue-300 print:border print:border-gray-800 p-0 h-10 sm:h-12 print:h-auto print:min-h-7 relative"
                   >
                     {row.type === "Twice" && (
                       <div className="h-full w-full absolute inset-0 pointer-events-none">

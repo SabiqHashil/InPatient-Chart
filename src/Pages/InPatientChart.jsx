@@ -6,7 +6,7 @@ import SignatureSection from "../components/SignatureSection";
 import { getDatesInRange } from "../utils/dateHelpers";
 import {
   isAdmissionFormComplete,
-  generatePdfFilename,
+  updateDocumentTitle,
 } from "../utils/validations";
 import "../App.css";
 import NoteUsage from "../components/Note-Usage";
@@ -21,9 +21,9 @@ function InPatientChart() {
     fileNo: "123456",
     petName: "Bruno",
     ownerName: "Ahmed Rahman",
-    doctor: "Dr. Ghadhaffi",
+    doctor: "Dr. Ghadhafi",
     assistantName: "Rajesh",
-    cageNo: "C-12",
+    cageNo: "IP-12",
     diagnosis: "Acute Gastroenteritis",
     admissionDate: "30-01-2026",
     dischargeDate: "25-02-2026",
@@ -74,20 +74,7 @@ function InPatientChart() {
 
   // Update document title for PDF naming
   React.useEffect(() => {
-    // Change title ONLY when both File No and Admission Date are present
-    if (header.fileNo && header.fileNo.trim() !== "" && header.admissionDate) {
-      const year = new Date(header.admissionDate).getFullYear();
-
-      const safeFileNo = header.fileNo
-        .trim()
-        .replace(/\s+/g, "-")
-        .toUpperCase();
-
-      document.title = `IP Chart - ${year}-${safeFileNo}`;
-    } else {
-      // Default title before required data is entered
-      document.title = "MyPet Clinic - IP Chart Generator";
-    }
+    updateDocumentTitle(header.fileNo, header.admissionDate);
   }, [header.fileNo, header.admissionDate]);
 
   return (
@@ -232,6 +219,14 @@ function InPatientChart() {
                         className="print-page mb-4 print:mb-0 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6 print:h-[297mm] print:box-border print:flex print:flex-col"
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
+                        {/* --- WATERMARK LOGO --- */}
+                        <div className="hidden print:block print:absolute print:inset-0 print:flex print:items-center print:justify-center print:pointer-events-none print:z-0">
+                          <img
+                            src="/mypetsa-logo.png"
+                            alt="MyPetsa Logo Watermark"
+                            className="print:w-72 print:h-72 print:opacity-15 print:object-contain"
+                          />
+                        </div>
                         {/* --- NEW LOGIC: PERMANENT HEADER --- */}
                         {/* Header remains on every page, but AdmissionForm is conditional */}
                         <div className="hidden print:block print-header mb-2">

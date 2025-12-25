@@ -59,7 +59,7 @@ export const isAdmissionFormComplete = (header) => {
     "diagnosis",
     "admissionDate",
     "dischargeDate",
-    "weight"
+    "weight",
   ];
   return requiredFields.every((field) => {
     const val = header[field];
@@ -67,9 +67,22 @@ export const isAdmissionFormComplete = (header) => {
   });
 };
 
-// Generate PDF filename from file number
-export const generatePdfFilename = (fileNo) => {
-  if (!fileNo) return "chart.pdf";
-  const sanitized = String(fileNo).replace(/[^a-zA-Z0-9]/g, "");
-  return `chart_${sanitized}.pdf`;
+// validations.jsx
+
+/**
+ * Update the webpage document title dynamically for IP Chart
+ * @param {string} fileNo - The file number entered by the doctor
+ * @param {string} admissionDate - Admission date (YYYY-MM-DD)
+ */
+export const updateDocumentTitle = (fileNo, admissionDate) => {
+  if (fileNo && fileNo.trim() !== "" && admissionDate) {
+    const year = new Date(admissionDate).getFullYear();
+    const safeFileNo = fileNo.trim().replace(/\s+/g, "-").toUpperCase();
+    document.title = `IP Chart - ${year}-${safeFileNo}`;
+  } else {
+    document.title = "MyPet Clinic - IP Chart Generator";
+  }
 };
+
+
+

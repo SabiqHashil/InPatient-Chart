@@ -97,7 +97,7 @@ const DietPlanTable = ({
                 {dateCols.map((_, i) => (
                   <td
                     key={i}
-                    className="border-2 border-blue-300 print:border print:border-gray-800 p-0 h-5 print:h-auto print:min-h-[20px] relative"
+                    className="border-2 border-blue-300 print:border print:border-gray-800 p-0 h-5 print:h-auto print:min-h-5 relative"
                   >
                     {row.type === "Twice" && (
                       <div className="h-full w-full absolute inset-0 pointer-events-none">
