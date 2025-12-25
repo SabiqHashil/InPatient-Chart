@@ -1,6 +1,6 @@
 import Logo from "./Logo";
 
-const Header = () => {
+const PDFHeader = () => {
   return (
     <div className="flex flex-col gap-4 mb-6">
       {/* --- Letterhead Section (PDF ONLY) --- */}
@@ -51,4 +51,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default PDFHeader;

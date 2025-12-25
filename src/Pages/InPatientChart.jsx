@@ -1,10 +1,8 @@
 import React, { useState, useRef } from "react";
-import Header from "../components/Header";
 import AdmissionForm from "../components/AdmissionForm";
 import DietPlanTable from "../components/DietPlanTable";
 import TreatmentPlanTable from "../components/TreatmentPlanTable";
 import SignatureSection from "../components/SignatureSection";
-import Footer from "../components/Footer";
 import { getDatesInRange } from "../utils/dateHelpers";
 import {
   isAdmissionFormComplete,
@@ -14,6 +12,8 @@ import "../App.css";
 import NoteUsage from "../components/Note-Usage";
 import WebFooter from "../components/WebFooter";
 import WebHeader from "../components/WebHeader";
+import PDFHeader from "../components/PDFHeader";
+import PDFFooter from "../components/PDFFooter";
 
 function InPatientChart() {
   // --- 1. Header State ---
@@ -235,7 +235,7 @@ function InPatientChart() {
                         {/* --- NEW LOGIC: PERMANENT HEADER --- */}
                         {/* Header remains on every page, but AdmissionForm is conditional */}
                         <div className="hidden print:block print-header mb-2">
-                          <Header
+                          <PDFHeader
                             onPrint={() => window.print()}
                             canPrint={
                               dateCols.length > 0 &&
@@ -312,7 +312,7 @@ function InPatientChart() {
                           {/* --- NEW LOGIC: PERMANENT FOOTER --- */}
                           {/* Footer shows on every page as per requirement */}
                           <div className="print-footer">
-                            <Footer isLastPage={isLast} />
+                            <PDFFooter isLastPage={isLast} />
                           </div>
                         </div>
                       </div>

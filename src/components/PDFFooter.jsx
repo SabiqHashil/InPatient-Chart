@@ -1,6 +1,6 @@
 import React from "react";
 
-const Footer = ({ isLastPage = true }) => {
+const PDFFooter = ({ isLastPage = true }) => {
   return (
     <div className="hidden print:block mt-auto">
       {/* Decorative Branding Line from Image 2 */}
@@ -41,4 +41,4 @@ const Footer = ({ isLastPage = true }) => {
   );
 };
 
-export default Footer;
+export default PDFFooter;
