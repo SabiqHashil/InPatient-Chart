@@ -52,7 +52,7 @@ const PDFFooter = ({ isLastPage = true }) => {
       </div>
 
       {/* Generation Timestamp (Bottom edge) */}
-      {isLastPage && (
+    {/*  {isLastPage && (*/}
         <div className="text-center text-[8px] text-gray-400 mt-1 italic border-t border-gray-100">
           Generated on {new Date().toLocaleDateString()}{" "}
           {new Date().toLocaleTimeString([], {
@@ -61,7 +61,7 @@ const PDFFooter = ({ isLastPage = true }) => {
             hour12: true,
           })}
         </div>
-      )}
+    {/*  )} */}
     </div>
   );
 };
