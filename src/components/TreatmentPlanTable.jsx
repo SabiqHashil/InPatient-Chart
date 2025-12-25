@@ -1,7 +1,14 @@
 import React from "react";
 import { formatName } from "../utils/validations";
 
-const TreatmentPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
+const TreatmentPlanTable = ({
+  rows,
+  dateCols,
+  onUpdate,
+  onRemove,
+  onAdd,
+  showAddButton,
+}) => {
   return (
     <section className="mb-6 print:mb-4">
       {/* Header Section: 
@@ -17,27 +24,29 @@ const TreatmentPlanTable = ({ rows, dateCols, onUpdate, onRemove, onAdd }) => {
         <div className="hidden lg:block"></div>
 
         <div className="flex justify-end col-span-1">
-          <button
-            onClick={onAdd}
-            className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold hover:bg-blue-700 print:hidden transition-all shadow-sm"
-            aria-label="Add Medicine"
-          >
-            <svg
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+          {showAddButton && (
+            <button
+              onClick={onAdd}
+              className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold hover:bg-blue-700 print:hidden transition-all shadow-sm"
+              aria-label="Add Medicine"
             >
-              <path
-                d="M12 5v14M5 12h14"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span>Add Medicine</span>
-          </button>
+              <svg
+                className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 5v14M5 12h14"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Add Medicine</span>
+            </button>
+          )}
         </div>
       </div>
 

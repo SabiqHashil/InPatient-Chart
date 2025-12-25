@@ -3,10 +3,10 @@ import React from "react";
 const SignatureSection = () => {
   return (
     /* Hidden from web UI, shown only in PDF/Print */
-    <div className="hidden print:flex flex-col mt-3 px-4 gap-3 mb-5">
+    <div className="hidden print:flex flex-col mt-1 px-4 gap-3 mb-5">
       {/* Consent Note */}
       <div className="text-[12px] text-gray-800 leading-snug text-justify">
-        I hereby give my consent for my cat to be admitted and kept as an
+        I hereby give my consent for my pet to be admitted and kept as an
         in-patient at MyPet Veterinary Clinic for examination, treatment, and
         monitoring. I confirm that I am aware of and accept these risks and
         agree that the clinic and its staff cannot be held responsible for

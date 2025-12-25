@@ -18,15 +18,15 @@ import WebHeader from "../components/WebHeader";
 function InPatientChart() {
   // --- 1. Header State ---
   const [header, setHeader] = useState({
-    fileNo: "IP-2025-0148",
+    fileNo: "123456",
     petName: "Bruno",
     ownerName: "Ahmed Rahman",
-    doctor: "Dr. Ayesha Khan",
-    assistantName: "Naveen K",
+    doctor: "Dr. Ghadhaffi",
+    assistantName: "Rajesh",
     cageNo: "C-12",
     diagnosis: "Acute Gastroenteritis",
-    admissionDate: "25-Dec-2025",
-    dischargeDate: "30-Dec-2025",
+    admissionDate: "30-01-2026",
+    dischargeDate: "25-02-2026",
     weight: "4.8",
   });
   const dateCols = React.useMemo(() => {
@@ -74,9 +74,21 @@ function InPatientChart() {
 
   // Update document title for PDF naming
   React.useEffect(() => {
-    const filename = generatePdfFilename(header.fileNo);
-    document.title = filename.replace(".pdf", "");
-  }, [header.fileNo]);
+    // Change title ONLY when both File No and Admission Date are present
+    if (header.fileNo && header.fileNo.trim() !== "" && header.admissionDate) {
+      const year = new Date(header.admissionDate).getFullYear();
+
+      const safeFileNo = header.fileNo
+        .trim()
+        .replace(/\s+/g, "-")
+        .toUpperCase();
+
+      document.title = `IP Chart - ${year}-${safeFileNo}`;
+    } else {
+      // Default title before required data is entered
+      document.title = "MyPet Clinic - IP Chart Generator";
+    }
+  }, [header.fileNo, header.admissionDate]);
 
   return (
     <div className="min-h-screen bg-blue-50 py-4 sm:py-8 pb-28 sm:pb-32 print:bg-white print:py-0">
@@ -105,13 +117,13 @@ function InPatientChart() {
                 MAX_TREATMENT_ROWS_PER_PAGE + 1;
 
               // Calculate smart row distribution for page 1
-              let page1DietMax = 7;
-              let page1TreatmentMax = 4;
+              let page1DietMax = 6;
+              let page1TreatmentMax = 5;
 
-              if (treatmentRows.length <= 3) {
-                page1DietMax = 8;
-              } else if (treatmentRows.length <= 6) {
-                page1DietMax = 8;
+              if (treatmentRows.length <= 6) {
+                page1DietMax = 6;
+              } else if (treatmentRows.length <= 5) {
+                page1DietMax = 5;
               }
 
               // Calculate date pages (15 days per page)
@@ -211,6 +223,7 @@ function InPatientChart() {
                       if (treatmentSlice.length === 0) showTreatment = false;
                     }
 
+                    const isFirst = pageIndex === 0;
                     const isLast = pageIndex === pages - 1;
 
                     return (
@@ -219,38 +232,27 @@ function InPatientChart() {
                         className="print-page mb-4 print:mb-0 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6 print:h-[297mm] print:box-border print:flex print:flex-col"
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
-                        {/* --- PRINT HEADER --- */}
-                        {pageIndex === 0 ? (
-                          <div className="hidden print:block print-header mb-2">
-                            <Header
-                              onPrint={() => window.print()}
-                              canPrint={
-                                dateCols.length > 0 &&
-                                isAdmissionFormComplete(header)
-                              }
+                        {/* --- NEW LOGIC: PERMANENT HEADER --- */}
+                        {/* Header remains on every page, but AdmissionForm is conditional */}
+                        <div className="hidden print:block print-header mb-2">
+                          <Header
+                            onPrint={() => window.print()}
+                            canPrint={
+                              dateCols.length > 0 &&
+                              isAdmissionFormComplete(header)
+                            }
+                          />
+
+                          {/* --- NEW LOGIC: ADMISSION DETAILS ONLY ON FIRST PAGE --- */}
+                          {isFirst && (
+                            <AdmissionForm
+                              data={header}
+                              onChange={handleHeaderChange}
+                              totalDays={dateCols.length}
+                              printMode={true}
                             />
-                            {/* Only first page shows AdmissionForm */}
-                            {pageIndex === 0 && (
-                              <AdmissionForm
-                                data={header}
-                                onChange={handleHeaderChange}
-                                totalDays={dateCols.length}
-                                printMode={true}
-                              />
-                            )}
-                          </div>
-                        ) : (
-                          <div className="hidden print:block print-header mb-2">
-                            {/* Only Header on other pages, no AdmissionForm */}
-                            <Header
-                              onPrint={() => window.print()}
-                              canPrint={
-                                dateCols.length > 0 &&
-                                isAdmissionFormComplete(header)
-                              }
-                            />
-                          </div>
-                        )}
+                          )}
+                        </div>
 
                         {/* Tables Container with flex-grow to fill space */}
                         <div className="print:grow print:overflow-hidden print:mt-48">
@@ -258,6 +260,7 @@ function InPatientChart() {
                             <DietPlanTable
                               rows={dietSlice}
                               dateCols={slice}
+                              showAddButton={isFirst}
                               onUpdate={(id, field, val) =>
                                 updateRow(setDietRows, dietRows, id, field, val)
                               }
@@ -277,6 +280,7 @@ function InPatientChart() {
                             <TreatmentPlanTable
                               rows={treatmentSlice}
                               dateCols={slice}
+                              showAddButton={isFirst}
                               onUpdate={(id, field, val) =>
                                 updateRow(
                                   setTreatmentRows,
@@ -300,9 +304,13 @@ function InPatientChart() {
                           )}
                         </div>
 
-                        {/* Footer at bottom */}
+                        {/* Footer Section */}
                         <div className="print:mt-auto">
-                          <SignatureSection />
+                          {/* --- NEW LOGIC: SIGNATURE ONLY ON FIRST PAGE --- */}
+                          {isFirst && <SignatureSection />}
+
+                          {/* --- NEW LOGIC: PERMANENT FOOTER --- */}
+                          {/* Footer shows on every page as per requirement */}
                           <div className="print-footer">
                             <Footer isLastPage={isLast} />
                           </div>

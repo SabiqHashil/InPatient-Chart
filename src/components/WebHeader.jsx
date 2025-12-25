@@ -1,13 +1,16 @@
-import React from "react";
 import Logo from "./Logo";
 
 const WebHeader = ({ onPrint, canPrint = true }) => {
   return (
-    <div className="print:hidden mb-6">
-      <Logo />
-      {/* --- Action Section (Print Button - Web UI Only) --- */}
-      <div className="flex justify-end">
-        {canPrint && (
+    <div className="print:hidden mb-6 relative">
+      {/* Centered Logo */}
+      <div className="flex justify-center">
+        <Logo />
+      </div>
+
+      {/* Right-aligned Print Button */}
+      {canPrint && (
+        <div className="absolute top-0 right-0">
           <button
             onClick={onPrint}
             className="bg-blue-600 text-white px-8 py-2.5 rounded-lg font-bold text-sm hover:bg-blue-700 transition-all shadow-md hover:shadow-lg transform hover:scale-105 flex items-center gap-2"
@@ -27,8 +30,8 @@ const WebHeader = ({ onPrint, canPrint = true }) => {
             </svg>
             Print IP Chart
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

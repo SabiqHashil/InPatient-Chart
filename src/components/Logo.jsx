@@ -18,10 +18,10 @@ const Logo = () => {
         <div className="flex flex-col border-l-2 border-blue-200 pl-3 print:border-gray-800">
           <h1 className="text-lg sm:text-2xl font-black text-blue-800 uppercase tracking-tighter leading-none print:text-xl print:text-black">
             IP {""}
-            <span className="text-blue-600 print:text-black">Chart</span>
+            <span className="text-blue-600 print:text-black">Chart</span> Generator
           </h1>
           <p className="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-widest mt-1 print:text-black">
-            Medical Records System
+            MyPet Veterinary Clinic
           </p>
         </div>
       </div>
