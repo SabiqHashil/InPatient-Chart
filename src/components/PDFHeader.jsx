@@ -4,7 +4,7 @@ const PDFHeader = () => {
   return (
     <div className="flex flex-col gap-4 mb-6 print:mx-5">
       {/* --- Letterhead Section (PDF ONLY) --- */}
-      <div className="hidden print:flex flex-row justify-between items-center gap-4 border-b-2 border-green-500 pb-2 mb-2">
+      <div className="hidden print:flex flex-row justify-between items-center gap-0 border-b-2 border-green-500 pb-2 mb-2">
         {/* Left Side: English Clinic Branding */}
         <div className="w-55 shrink-0 m-1.5">
           <div className="bg-[#005288] text-white px-4 py-2 rounded-tr-[30px]">
