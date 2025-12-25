@@ -3,43 +3,44 @@ import React from "react";
 const NoteUsage = () => {
   return (
     <div className="flex flex-col gap-4">
-      {/* Demo notice - Optimized for mobile & large screen alignment */}
-      <div className="mx-0 sm:mx-0 my-2 p-3 sm:p-5 bg-amber-50 border-l-4 border-amber-400 text-amber-900 rounded-r-lg shadow-sm print:hidden">
+      {/* Usage Guide Section */}
+      <div className="mx-0 my-2 p-3 sm:p-5 bg-blue-50 border-l-4 border-blue-400 text-blue-900 rounded-r-lg shadow-sm print:hidden">
         <div className="flex flex-col gap-2">
           <section>
-            <p className="text-xs sm:text-sm font-black uppercase tracking-widest text-amber-700">
-              Note:
+            <p className="text-xs sm:text-sm md:text-base font-black uppercase tracking-widest text-blue-700">
+              Usage Guide:
             </p>
-            <p className="text-xs sm:text-sm leading-relaxed">
-              This In-Patient Chart generation is intended solely for
-              demonstration and training purposes. No patient information
-              entered will be stored, recorded, or retained. All data is
-              temporary and session-based.
-            </p>
-          </section>
-
-          <section className="mt-1 border-t border-amber-200 pt-2">
-            <p className="text-xs sm:text-sm font-black uppercase tracking-widest text-amber-700">
-              Usage:
-            </p>
-            <p className="text-xs sm:text-sm leading-relaxed">
-              Complete the admission, diet, and treatment plans, then use the
-              <strong className="text-amber-800"> Print Chart</strong> button to
-              save as PDF. Refreshing the page will clear all data for a new
-              session.
+            <p className="text-xs sm:text-sm md:text-base leading-relaxed">
+              1. Fill out the Admission, Diet, and Treatment forms. <br />
+              2. Click <strong className="text-blue-800">Print Chart</strong> to save a PDF. <br />
+              3. Refreshing the page clears all temporary data for a new session.
             </p>
           </section>
         </div>
       </div>
 
-      {/* Empty State / Placeholder: 
-          Centered text with a responsive dash-border box 
-      */}
-      <div className="px-6 py-12 sm:py-20 border-2 border-dashed border-blue-200 rounded-xl bg-gray-50/50 text-gray-400 text-center transition-all print:hidden">
+      {/* Important Note Section */}
+      <div className="mx-0 my-2 p-3 sm:p-5 bg-amber-50 border-l-4 border-amber-400 text-amber-900 rounded-r-lg shadow-sm print:hidden">
+        <div className="flex flex-col gap-2">
+          <section>
+            <p className="text-xs sm:text-sm md:text-base font-black uppercase tracking-widest text-amber-700">
+              Note:
+            </p>
+            <p className="text-xs sm:text-sm md:text-base leading-relaxed">
+              This In-Patient Chart tool is for demonstration and training only. <br />
+              No real patient data is stored. All entries are temporary and session-based. <br />
+              Doctors can safely practice charting and PDF generation.
+            </p>
+          </section>
+        </div>
+      </div>
+
+      {/* Empty State / Placeholder */}
+      <div className="px-6 py-12 sm:py-20 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50 text-gray-400 text-center transition-all print:hidden">
         <div className="max-w-md mx-auto flex flex-col items-center gap-3">
-          {/* Visual Icon for "Select Dates" */}
+          {/* Calendar Icon */}
           <svg
-            className="w-10 h-10 text-blue-200"
+            className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-gray-300"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -52,7 +53,7 @@ const NoteUsage = () => {
             />
           </svg>
 
-          <p className="text-sm sm:text-lg leading-snug">
+          <p className="text-sm sm:text-base md:text-lg leading-snug">
             Please select an
             <span className="block sm:inline font-bold text-blue-600 mx-1">
               Admission Date
