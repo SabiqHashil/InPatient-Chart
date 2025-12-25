@@ -12,7 +12,7 @@ const NoteUsage = () => {
             </p>
             <p className="text-xs sm:text-sm md:text-base leading-relaxed">
               1. Fill out the Admission, Diet, and Treatment forms. <br />
-              2. Click <strong className="text-blue-800">Print Chart</strong> to generate a PDF. <br />
+              2. Click <strong className="text-blue-800">Print IP Chart</strong> to generate a PDF. <br />
               3. Save the PDF in your system for future reference or documentation purposes. <br />
               4. Refreshing the page clears all temporary data for a new session.
             </p>
