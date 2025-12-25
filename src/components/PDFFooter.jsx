@@ -15,9 +15,22 @@ const PDFFooter = ({ isLastPage = true }) => {
       <div className="flex justify-between items-end px-2 pb-2 text-[#005288] font-bold">
         {/* Left Side: English Address & Tel */}
         <div className="flex-1 text-[10px] leading-tight">
-          <p>Sari Street, Salama District, Jeddah,</p>
-          <p>Saudi Arabia, Tel : 0533318616</p>
-        </div>
+  <p>
+    <a
+      href="https://www.google.com/maps/search/?api=1&query=Sari+Street,+Salama+District,+Jeddah,+Saudi+Arabia"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      Sari Street, Salama District, Jeddah,
+    </a>
+  </p>
+  <p>
+    <a href="tel:+966533318616" className="text-blue-600 hover:underline">
+      Tel : 0533318616
+    </a>
+  </p>
+</div>
 
         {/* Center Side: Digital Contact */}
         {/* Center Side: Digital Contact */}
@@ -46,9 +59,22 @@ const PDFFooter = ({ isLastPage = true }) => {
 
         {/* Right Side: Arabic Address & Mobile */}
         <div className="flex-1 text-right text-[10px] leading-tight" dir="rtl">
-          <p>شارع صاري، حي السلامة، جدة، المملكة</p>
-          <p>العربية السعودية، جوال: ٠٥٣٣٣١٨٦١٦</p>
-        </div>
+  <p>
+    <a
+      https://www.google.com/maps/search/?api=1&query=Sari+Street,+Salama+District,+Jeddah,+Saudi+Arabia"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      شارع صاري، حي السلامة، جدة،
+    </a>
+  </p>
+  <p>
+    <a href="tel:+966533318616" className="text-blue-600 hover:underline">
+      العربية السعودية، جوال: ٠٥٣٣٣١٨٦١٦
+    </a>
+  </p>
+</div>
       </div>
 
       {/* Generation Timestamp (Bottom edge) */}
