@@ -2,13 +2,30 @@
 @tailwind components; */
 @tailwind utilities;
 
-/* Custom Print Styles */
+/* ===============================
+   A4 PDF & Print Configuration
+   =============================== */
 @media print {
   @page {
-    size: portrait; /* or landscape */
-    margin: 10mm;
-  } /* Landscape is usually better for timelines */
+    size: A4 portrait; /* Use `A4 landscape` if needed */
+    margin: 12mm;
+  }
+
   body {
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: white;
+  }
+
+  /* Prevent unwanted page breaks */
+  .no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Force page break when needed */
+  .page-break {
+    page-break-before: always;
+    break-before: page;
   }
 }
