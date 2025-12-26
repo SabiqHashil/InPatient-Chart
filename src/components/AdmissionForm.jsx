@@ -1,4 +1,4 @@
-import React from "react";
+import { formatDateDDMonYYYY } from "../utils/dateHelpers";
 import {
   formatName,
   formatFileNumber,
@@ -15,6 +15,7 @@ const InputField = ({
   readOnly = false,
   min,
   onChange,
+  formatValue,
 }) => (
   <div className="flex flex-col w-full">
     <label className="font-bold text-[10px] sm:text-xs uppercase text-blue-700 mb-0.5 sm:mb-1.5 tracking-tight print:text-[10px] print:mb-0.5">
@@ -22,7 +23,7 @@ const InputField = ({
     </label>
     {readOnly ? (
       <div className="p-1.5 sm:p-2 bg-blue-100 border border-blue-200 rounded font-bold text-blue-900 h-8 sm:h-9 flex items-center text-xs sm:text-sm overflow-hidden truncate print:p-1 print:h-6 print:text-[12px] print:bg-gray-50 print:border-gray-300">
-        {val ?? ""}
+        {formatValue ? formatValue(val) : val ?? ""}
       </div>
     ) : (
       <input
@@ -107,6 +108,7 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         min={getTodayDate()}
         onChange={handleInputChange}
         readOnly={printMode}
+        formatValue={formatDateDDMonYYYY}
       />
       <InputField
         label="Discharge Date"
@@ -116,6 +118,7 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         min={data.admissionDate || getTodayDate()}
         onChange={handleInputChange}
         readOnly={printMode}
+        formatValue={formatDateDDMonYYYY}
       />
 
       {/* Show "No. of Days" only in Web UI, hide in PDF */}

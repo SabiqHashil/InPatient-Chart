@@ -17,3 +17,14 @@ export const getDatesInRange = (startDate, endDate) => {
   }
   return dates;
 };
+
+export const formatDateDDMonYYYY = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-GB", { month: "short" });
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
