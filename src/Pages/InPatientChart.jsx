@@ -240,17 +240,20 @@ function InPatientChart() {
 
                           {/* --- NEW LOGIC: ADMISSION DETAILS ONLY ON FIRST PAGE --- */}
                           {isFirst && (
+<div className="no-break">
                             <AdmissionForm
                               data={header}
                               onChange={handleHeaderChange}
                               totalDays={dateCols.length}
                               printMode={true}
                             />
+</div>
                           )}
                         </div>
 
                         {/* Tables Container with flex-grow to fill space */}
                         <div className="print:grow print:overflow-hidden print:mt-48">
+<div className="page-break" />
                           {showDiet && dietSlice.length > 0 && (
                             <DietPlanTable
                               rows={dietSlice}
