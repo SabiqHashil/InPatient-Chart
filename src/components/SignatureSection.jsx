@@ -1,5 +1,3 @@
-import React from "react";
-
 const SignatureSection = () => {
   return (
     /* Hidden from web UI, shown only in PDF/Print */

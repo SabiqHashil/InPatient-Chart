@@ -1,31 +1,78 @@
-/* @tailwind base;
-@tailwind components; */
+/* @tailwind base; */
+/* @tailwind components; */
 @tailwind utilities;
+@import "tailwindcss";
+
 
 /* ===============================
    A4 PDF & Print Configuration
    =============================== */
 @media print {
   @page {
-    size: A4 portrait; /* Use `A4 landscape` if needed */
-    margin: 12mm;
+    size: A4 portrait;
+    margin: 0; /* Required for fixed header/footer */
   }
 
+  html,
   body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* Main printable page */
+  .print-page {
+    padding-top: 120px; /* Header height */
+    padding-bottom: 90px; /* Footer height */
+    position: relative;
+  }
+
+  /* Fixed Header */
+  .print-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
     background: white;
+    z-index: 999;
   }
 
-  /* Prevent unwanted page breaks */
+  /* Fixed Footer */
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 90px;
+    background: white;
+    z-index: 999;
+  }
+
+  /* Prevent content splitting */
   .no-break {
-    page-break-inside: avoid;
     break-inside: avoid;
+    page-break-inside: avoid;
   }
 
-  /* Force page break when needed */
+  /* Controlled page break */
   .page-break {
-    page-break-before: always;
     break-before: page;
+    page-break-before: always;
+  }
+
+  /* 🚫 Prevent empty last page */
+  .page-break:last-child {
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  /* Remove screen-only height issues */
+  .min-h-screen,
+  .h-screen {
+    height: auto !important;
+    min-height: auto !important;
   }
 }

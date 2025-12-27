@@ -1,4 +1,3 @@
-import React from "react";
 import { formatName } from "../utils/validations";
 
 const TreatmentPlanTable = ({

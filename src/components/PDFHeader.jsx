@@ -1,5 +1,3 @@
-import Logo from "./Logo";
-
 const PDFHeader = () => {
   return (
     <div className="flex flex-col gap-4 mb-6 print:mx-5">
