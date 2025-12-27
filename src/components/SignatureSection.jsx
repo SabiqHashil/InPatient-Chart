@@ -2,7 +2,7 @@ const SignatureSection = ({ isFirstPage }) => {
   if (!isFirstPage) return null;
 
   return (
-    <div className="hidden print:block print:absolute print:left-0 print:right-0 print:bottom-[80px] print:px-4">
+    <div className="hidden print:block print:absolute print:left-0 print:right-0 print:bottom-[80px] print:px-4 mb-5">
       {/* Consent Text */}
       <div className="text-[12px] text-gray-800 leading-snug text-justify mb-4">
         I hereby give my consent for my pet to be admitted and kept as an

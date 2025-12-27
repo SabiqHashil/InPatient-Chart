@@ -1,15 +1,6 @@
-const PDFFooter = ({  isLastPage = true }) => {
+const PDFFooter = ({ isLastPage = true }) => {
   return (
     <div className="hidden print:block mt-auto print:mx-5">
-      {/* Decorative Branding Line from Image 2 */}
-      <div className="flex w-full h-3 mb-2">
-        <div className="bg-[#56b72a] grow"></div> {/* Green bar */}
-        <div className="bg-[#56b72a] w-10 skew-x-30 -ml-2 z-10"></div>{" "}
-        {/* Slant */}
-        <div className="bg-white w-2 skew-x-30 -ml-2 z-10"></div>
-        <div className="bg-[#005288] w-1/3 -ml-4"></div> {/* Blue bar */}
-      </div>
-
       <div className="flex justify-between items-end px-2 pb-2 text-[#005288] font-bold">
         {/* Left Side: English Address & Tel */}
         <div className="flex-1 text-[10px] leading-tight">
@@ -78,6 +69,15 @@ const PDFFooter = ({  isLastPage = true }) => {
             </a>
           </p>
         </div>
+      </div>
+
+      {/* Decorative Branding Line from Image 2 */}
+      <div className="flex w-full h-3 mb-2">
+        <div className="bg-[#56b72a] grow"></div> {/* Green bar */}
+        <div className="bg-[#56b72a] w-10 skew-x-30 -ml-2 z-10"></div>{" "}
+        {/* Slant */}
+        <div className="bg-white w-2 skew-x-30 -ml-2 z-10"></div>
+        <div className="bg-[#005288] w-1/3 -ml-4"></div> {/* Blue bar */}
       </div>
 
       {/* Generation Timestamp (Bottom edge) */}
