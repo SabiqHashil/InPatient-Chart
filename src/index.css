@@ -67,6 +67,10 @@
     break-before: auto;
     page-break-before: auto;
   }
+  .print-page {
+    position: relative; /* This is crucial for absolute positioning inside */
+    min-height: 297mm; /* or your desired A4 height */
+  }
 
   /* Remove screen-only height issues */
   .min-h-screen,
@@ -97,4 +101,3 @@
     width: 100% !important;
   }
 }
-

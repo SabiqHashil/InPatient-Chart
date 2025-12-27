@@ -216,7 +216,7 @@ function InPatientChart() {
                     return (
                       <div
                         key={pageIndex}
-                        className="print-page mb-4 print:mb-0 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6 print:box-border"
+                        className="print-page mb-4 print:mb-0 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6 print:box-border print:relative"
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
                         {/* --- WATERMARK LOGO --- */}
@@ -313,9 +313,9 @@ function InPatientChart() {
                         </div>
 
                         {/* Footer Section */}
-                        <div className="print:mt-auto">
+                        <div className="print:mt-auto ">
                           {/* --- NEW LOGIC: SIGNATURE ONLY ON FIRST PAGE --- */}
-                          {isFirst && <SignatureSection />}
+                          {isFirst && <SignatureSection isFirstPage={true} />}
 
                           {/* --- NEW LOGIC: PERMANENT FOOTER --- */}
                           {/* Footer shows on every page as per requirement */}

@@ -1,17 +1,10 @@
-const SignatureSection = () => {
+const SignatureSection = ({ isFirstPage }) => {
+  if (!isFirstPage) return null;
+
   return (
-    <div
-      className="
-        hidden print:block
-        print:fixed
-        print:bottom-24
-        print:left-0
-        print:right-0
-        px-6
-        z-20
-      "
-    >
-      <div className="text-[12px] text-gray-800 leading-snug text-justify mb-3">
+    <div className="hidden print:block print:absolute print:left-0 print:right-0 print:bottom-[80px] print:px-4">
+      {/* Consent Text */}
+      <div className="text-[12px] text-gray-800 leading-snug text-justify mb-4">
         I hereby give my consent for my pet to be admitted and kept as an
         in-patient at MyPet Veterinary Clinic for examination, treatment, and
         monitoring. I confirm that I am aware of and accept these risks and
@@ -21,15 +14,16 @@ const SignatureSection = () => {
         hospitalization charges.
       </div>
 
-      <div className="flex justify-between items-end mt-10">
+      {/* Signature Lines */}
+      <div className="flex justify-between items-end mt-6">
         <div className="text-center">
-          <div className="w-32 border-b border-gray-800 h-2 mb-0.5"></div>
+          <div className="w-32 border-b border-gray-800 h-2 mb-1"></div>
           <p className="font-bold text-gray-700 uppercase text-[10px]">
             Doctor Signature
           </p>
         </div>
         <div className="text-center">
-          <div className="w-32 border-b border-gray-800 h-2 mb-0.5"></div>
+          <div className="w-32 border-b border-gray-800 h-2 mb-1"></div>
           <p className="font-bold text-gray-700 uppercase text-[10px]">
             Owner Signature
           </p>
