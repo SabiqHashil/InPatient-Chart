@@ -1,11 +1,13 @@
 const WebFooter = () => {
   const START_YEAR = 2025;
+  const CURRENT_YEAR = new Date().getFullYear();
+  const VERSION = "v1.0.0";
 
   return (
     <footer className="mt-auto border-t border-gray-200 bg-white print:hidden">
-      <div className="flex flex-col items-center justify-center gap-3 py-8 px-4">
+      <div className="flex flex-col items-center justify-center gap-3 py-6 px-4">
         {/* Logo + Brand Name (Single Row, Centered) */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
           <img
             src="/kabs-logo.png"
             alt="Kabs Digital Logo"
@@ -49,12 +51,12 @@ const WebFooter = () => {
           Innovations in One Click
         </p>
 
-        {/* Copyright */}
+        {/* Copyright + Version */}
         <p
-          className="text-[9px] text-gray-500"
+          className="text-[9px] text-gray-500 text-center"
           style={{ fontFamily: "'Roboto', sans-serif" }}
         >
-          © {START_YEAR} - {new Date().getFullYear()} Kabs Digital
+          © {START_YEAR} - {CURRENT_YEAR} Kabs Digital • Version {VERSION}
         </p>
       </div>
     </footer>
