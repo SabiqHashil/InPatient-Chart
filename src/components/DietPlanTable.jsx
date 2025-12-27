@@ -58,7 +58,7 @@ const DietPlanTable = ({
           <thead>
             <tr className="bg-blue-600 text-white print:bg-gray-100 print:text-gray-900">
               <th className="border-2 border-blue-300 print:border print:border-gray-800 p-1 sm:p-2 text-left font-semibold w-28 sm:w-32">
-                Parameters
+                Observations
               </th>
               {dateCols.map((date, i) => (
                 <th
