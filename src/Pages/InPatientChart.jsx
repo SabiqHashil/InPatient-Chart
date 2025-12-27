@@ -105,12 +105,12 @@ function InPatientChart() {
 
               // Calculate smart row distribution for page 1
               let page1DietMax = 6;
-              let page1TreatmentMax = 5;
+              const page1TreatmentMax = 5;
 
-              if (treatmentRows.length <= 6) {
-                page1DietMax = 6;
+              if (treatmentRows.length <= 4 ? 7 : 6) {
+                page1DietMax = 7;
               } else if (treatmentRows.length <= 5) {
-                page1DietMax = 5;
+                page1DietMax = 6;
               }
 
               // Calculate date pages (15 days per page)
@@ -216,7 +216,7 @@ function InPatientChart() {
                     return (
                       <div
                         key={pageIndex}
-                        className="print-page mb-4 print:mb-0 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6 print:h-[297mm] print:box-border print:flex print:flex-col"
+                        className="print-page mb-4 print:mb-0 print:p-6 print:border-t-2 print:border-gray-300 print:m-0 p-4 sm:p-6 print:box-border"
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
                         {/* --- WATERMARK LOGO --- */}
@@ -252,53 +252,63 @@ function InPatientChart() {
                         </div>
 
                         {/* Tables Container with flex-grow to fill space */}
-                        <div className="print:grow print:overflow-hidden print:mt-48">
-                          <div className="page-break" />
+                        <div className="print:grow print:overflow-visible print:mt-40">
+                          <div />
                           {showDiet && dietSlice.length > 0 && (
-                            <DietPlanTable
-                              rows={dietSlice}
-                              dateCols={slice}
-                              showAddButton={isFirst}
-                              onUpdate={(id, field, val) =>
-                                updateRow(setDietRows, dietRows, id, field, val)
-                              }
-                              onRemove={(id) =>
-                                removeRow(setDietRows, dietRows, id)
-                              }
-                              onAdd={() =>
-                                addRow(setDietRows, dietRows, {
-                                  label: "",
-                                  type: "Once",
-                                })
-                              }
-                            />
+                            <div className="w-full print:w-full print:overflow-visible">
+                              <DietPlanTable
+                                rows={dietSlice}
+                                dateCols={slice}
+                                showAddButton={isFirst}
+                                onUpdate={(id, field, val) =>
+                                  updateRow(
+                                    setDietRows,
+                                    dietRows,
+                                    id,
+                                    field,
+                                    val
+                                  )
+                                }
+                                onRemove={(id) =>
+                                  removeRow(setDietRows, dietRows, id)
+                                }
+                                onAdd={() =>
+                                  addRow(setDietRows, dietRows, {
+                                    label: "",
+                                    type: "Once",
+                                  })
+                                }
+                              />
+                            </div>
                           )}
 
                           {showTreatment && treatmentSlice.length > 0 && (
-                            <TreatmentPlanTable
-                              rows={treatmentSlice}
-                              dateCols={slice}
-                              showAddButton={isFirst}
-                              onUpdate={(id, field, val) =>
-                                updateRow(
-                                  setTreatmentRows,
-                                  treatmentRows,
-                                  id,
-                                  field,
-                                  val
-                                )
-                              }
-                              onRemove={(id) =>
-                                removeRow(setTreatmentRows, treatmentRows, id)
-                              }
-                              onAdd={() =>
-                                addRow(setTreatmentRows, treatmentRows, {
-                                  label: "",
-                                  dose: "",
-                                  type: "Twice",
-                                })
-                              }
-                            />
+                            <div className="w-full print:w-full print:overflow-visible">
+                              <TreatmentPlanTable
+                                rows={treatmentSlice}
+                                dateCols={slice}
+                                showAddButton={isFirst}
+                                onUpdate={(id, field, val) =>
+                                  updateRow(
+                                    setTreatmentRows,
+                                    treatmentRows,
+                                    id,
+                                    field,
+                                    val
+                                  )
+                                }
+                                onRemove={(id) =>
+                                  removeRow(setTreatmentRows, treatmentRows, id)
+                                }
+                                onAdd={() =>
+                                  addRow(setTreatmentRows, treatmentRows, {
+                                    label: "",
+                                    dose: "",
+                                    type: "Twice",
+                                  })
+                                }
+                              />
+                            </div>
                           )}
                         </div>
 

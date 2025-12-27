@@ -1,9 +1,17 @@
 const SignatureSection = () => {
   return (
-    /* Hidden from web UI, shown only in PDF/Print */
-    <div className="hidden print:flex flex-col mt-1 px-4 gap-3 mb-5">
-      {/* Consent Note */}
-      <div className="text-[12px] text-gray-800 leading-snug text-justify">
+    <div
+      className="
+        hidden print:block
+        print:fixed
+        print:bottom-24
+        print:left-0
+        print:right-0
+        px-6
+        z-20
+      "
+    >
+      <div className="text-[12px] text-gray-800 leading-snug text-justify mb-3">
         I hereby give my consent for my pet to be admitted and kept as an
         in-patient at MyPet Veterinary Clinic for examination, treatment, and
         monitoring. I confirm that I am aware of and accept these risks and
@@ -13,17 +21,13 @@ const SignatureSection = () => {
         hospitalization charges.
       </div>
 
-      {/* Signatures Section */}
       <div className="flex justify-between items-end mt-10">
-        {/* Doctor Signature */}
         <div className="text-center">
           <div className="w-32 border-b border-gray-800 h-2 mb-0.5"></div>
           <p className="font-bold text-gray-700 uppercase text-[10px]">
             Doctor Signature
           </p>
         </div>
-
-        {/* Owner Signature */}
         <div className="text-center">
           <div className="w-32 border-b border-gray-800 h-2 mb-0.5"></div>
           <p className="font-bold text-gray-700 uppercase text-[10px]">
@@ -34,5 +38,4 @@ const SignatureSection = () => {
     </div>
   );
 };
-
 export default SignatureSection;

@@ -3,7 +3,6 @@
 @tailwind utilities;
 @import "tailwindcss";
 
-
 /* ===============================
    A4 PDF & Print Configuration
    =============================== */
@@ -24,8 +23,8 @@
 
   /* Main printable page */
   .print-page {
-    padding-top: 120px; /* Header height */
-    padding-bottom: 90px; /* Footer height */
+    padding-top: 140px; /* Header height */
+    padding-bottom: 100px; /* Footer height */
     position: relative;
   }
 
@@ -76,3 +75,26 @@
     min-height: auto !important;
   }
 }
+
+/* PDF / Print Table Styles */
+@media print {
+  table {
+    width: 100% !important;
+    table-layout: fixed !important; /* Evenly distribute columns */
+    border-collapse: collapse !important;
+    font-size: 10px;
+  }
+
+  th,
+  td {
+    padding: 4px 6px !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+  }
+
+  .diet-table,
+  .treatment-table {
+    width: 100% !important;
+  }
+}
+

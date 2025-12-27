@@ -1,4 +1,4 @@
-const PDFFooter = ({ currentPage = 1, totalPages = 1, isLastPage = true }) => {
+const PDFFooter = ({  isLastPage = true }) => {
   return (
     <div className="hidden print:block mt-auto print:mx-5">
       {/* Decorative Branding Line from Image 2 */}
@@ -81,11 +81,6 @@ const PDFFooter = ({ currentPage = 1, totalPages = 1, isLastPage = true }) => {
       </div>
 
       {/* Generation Timestamp (Bottom edge) */}
-      {/*  {isLastPage && (*/}
-      {/* Page Number */}
-      <div className="text-right text-[9px] text-gray-500 px-2">
-        Page {currentPage} of {totalPages}
-      </div>
       <div className="text-center text-[8px] text-gray-400 mt-1 italic border-t border-gray-100">
         Generated on {new Date().toLocaleDateString()}{" "}
         {new Date().toLocaleTimeString([], {
@@ -94,7 +89,6 @@ const PDFFooter = ({ currentPage = 1, totalPages = 1, isLastPage = true }) => {
           hour12: true,
         })}
       </div>
-      {/*  )} */}
     </div>
   );
 };
