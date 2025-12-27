@@ -28,6 +28,7 @@ function InPatientChart() {
     admissionDate: "",
     dischargeDate: "",
     weight: "4.8",
+    patientStage: "",
   });
   const dateCols = React.useMemo(() => {
     if (header.admissionDate && header.dischargeDate) {

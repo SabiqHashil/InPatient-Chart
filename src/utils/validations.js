@@ -60,6 +60,7 @@ export const isAdmissionFormComplete = (header) => {
     "admissionDate",
     "dischargeDate",
     "weight",
+    "patientStage",
   ];
   return requiredFields.every((field) => {
     const val = header[field];
@@ -83,6 +84,3 @@ export const updateDocumentTitle = (fileNo, admissionDate) => {
     document.title = "MyPet Clinic - IP Chart Generator";
   }
 };
-
-
-
