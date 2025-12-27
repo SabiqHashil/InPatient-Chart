@@ -148,7 +148,7 @@ const AdmissionForm = ({ data, onChange, totalDays, printMode = false }) => {
         readOnly={printMode}
       />
       {/* 3. Diagnosis Section (Full Width) */}
-      <div className="col-span-2 lg:col-span-2 print:col-span-2">
+      <div className="col-span-2 lg:col-span-2 print:col-span-3">
         <InputField
           label="Diagnosis"
           name="diagnosis"
