@@ -220,13 +220,14 @@ function InPatientChart() {
                         style={{ pageBreakAfter: isLast ? "auto" : "always" }}
                       >
                         {/* --- WATERMARK LOGO --- */}
-                        <div className="hidden print:block print:absolute print:inset-0 print:flex print:items-center print:justify-center print:pointer-events-none print:z-0">
+                        <div className="hidden print:block print:absolute print:top-0 print:left-0 print:w-full print:h-full print:flex print:items-center print:justify-center print:pointer-events-none print:z-0">
                           <img
                             src="/mypetsa-logo.png"
                             alt="MyPetsa Logo Watermark"
-                            className="print:w-72 print:h-72 print:opacity-15 print:object-contain"
+                            className="print:max-w-[300px] print:max-h-[300px] print:opacity-10 print:object-contain"
                           />
                         </div>
+
                         {/* --- NEW LOGIC: PERMANENT HEADER --- */}
                         {/* Header remains on every page, but AdmissionForm is conditional */}
                         <div className="hidden print:block print-header mb-2">
