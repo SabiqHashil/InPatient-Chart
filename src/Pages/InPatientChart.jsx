@@ -18,16 +18,16 @@ import PDFFooter from "../components/PDFFooter";
 function InPatientChart() {
   // --- 1. Header State ---
   const [header, setHeader] = useState({
-    fileNo: "123456",
-    petName: "Bruno",
-    ownerName: "Ahmed Rahman",
-    doctor: "Dr. Ghadhafi",
-    assistantName: "Rajesh",
-    cageNo: "IP-12",
-    diagnosis: "Acute Gastroenteritis",
+    fileNo: "",
+    petName: "",
+    ownerName: "",
+    doctor: "Dr. ",
+    assistantName: "",
+    cageNo: "IP-",
+    diagnosis: "",
     admissionDate: "",
     dischargeDate: "",
-    weight: "4.8",
+    weight: "",
     patientStage: "",
   });
   const dateCols = React.useMemo(() => {
