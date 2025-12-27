@@ -28,7 +28,7 @@ const WebFooter = () => {
 
         {/* Divider */}
         <span
-          className="w-48 h-[2px] rounded-full"
+          className="w-48 h-0.5 rounded-full"
           style={{
             backgroundImage: "linear-gradient(90deg, #3B82F6, #1E3A8A)",
           }}

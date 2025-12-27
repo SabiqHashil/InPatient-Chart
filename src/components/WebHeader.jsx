@@ -6,7 +6,7 @@ const WebHeader = ({ onPrint, canPrint = true }) => {
         {/* Logo + Text */}
 <div className="flex items-center justify-center sm:justify-start gap-2 mx-auto sm:mx-0">
           {/* Logo */}
-          <div className="bg-white p-1.5 sm:p-2 rounded-xl shadow-lg flex-shrink-0">
+          <div className="bg-white p-1.5 sm:p-2 rounded-xl shadow-lg shrink-0">
             <img
               src="/mypetsa-logo.png"
               alt="MyPetsa Logo"
