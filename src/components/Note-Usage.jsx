@@ -57,8 +57,8 @@ const NoteUsage = () => {
           <p>
             This IP Chart Generator is developed only for{" "}
             <span className="font-semibold">training and demonstration</span>{" "}
-            purposes for doctors. It can be used for observing IP history,
-            follow-ups, and customized charting as required.
+            purposes for doctors. It can be used for observing IP patients and
+            customized charting.
           </p>
 
           <p>
