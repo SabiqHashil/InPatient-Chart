@@ -58,8 +58,6 @@ const RowLimitDialog = ({ isOpen, tableType = "Diet", maxRows = 7, onClose }) =>
             </p>
           </div>
 
-          
-
         {/* Footer - Action Button */}
         <div className="bg-slate-50 border-t border-slate-200 px-5 sm:px-6 py-3 sm:py-4">
           <button
