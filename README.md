@@ -2,43 +2,52 @@
 
 Professional medical chart PDF generator for veterinary clinics.
 
-**Setup:** `npm install && npm run dev`  
-**Status:** ✅ Production Ready  
-**Tech:** React 19.2 · Vite 7.2 · Tailwind CSS 4.1
+**Setup:** `npm install && npm run dev` | **Tech:** React 19.2 · Vite 7.2 · Tailwind CSS 4.1  
+**Status:** ✅ Production Ready
 
-## ✨ Key Features
+## ✨ Features
 
-- **Smart Pagination:** 15 days/page with intelligent row distribution
-- **Dynamic Forms:** Real-time validation, auto-formatting, pre-filled defaults
-- **Professional PDF:** A4 format, multi-page, headers/footers, watermark, signature section
-- **Responsive UI:** Mobile, tablet, desktop with add/remove functionality
-- **Row Limit Alerts:** Clinical-styled dialog when table capacity reached
-- **Offline Ready:** Browser-based, no backend, local data storage
+- **Smart Pagination:** 15 days/page + intelligent row distribution
+- **Dynamic Row Allocation:** 11 total rows/page (bidirectional diet/treatment balance)
+- **Row Limit Alerts:** Clinical-styled dialog when capacity reached
+- **Forms & Validation:** Real-time formatting, pre-filled defaults, date validation
+- **Professional PDF:** A4 format, multi-page, headers/footers, watermark, signatures
+- **Responsive UI:** Mobile, tablet, desktop with full CRUD functionality
+- **Offline:** Browser-based, no backend, completely local data storage
 
 ## 🚀 Quick Start
 
 ```bash
-npm install                    # Install
-npm run dev                    # Start dev server (localhost:5173)
-npm run build                  # Build for production
-npm run lint                   # Check code quality
+npm install          # Install dependencies
+npm run dev          # Start dev server (localhost:5173)
+npm run build        # Production build
+npm run lint         # Code quality check
 ```
 
-## 📋 Usage Steps
+## 📋 Usage
 
-1. Fill 11 patient fields (name, owner, diagnosis, etc.)
-2. Select admission & discharge dates
-3. Add diet items (Food, Water, Urine, etc.)
+1. Fill patient info (name, owner, diagnosis, etc.)
+2. Set admission & discharge dates
+3. Add diet items (Food, Water, Urine, Stool, Vomiting)
 4. Add medications with dosage
 5. Click "Print IP Chart" → Save as PDF
 
-## 🏥 Row Limit System
+## 🏥 Row Capacity System
 
-**Capacity per page:**
-- Page 1: 7 diet items + 6 treatment items
-- Pages 2+: 6 diet items + 5 treatment items
+**A4 Page Limit: 11 rows total (flexible distribution)**
 
-When limit reached, clinical alert dialog displays with developer contact info for capacity expansion.
+- **Diet Base:** 7 rows max
+- **Treatment Base:** 4 rows max
+- **Dynamic:** Adjusts based on opposite table's row count
+- **Hard Limit:** Never exceeds 11 total rows per page
+- **Alert:** Clinical dialog shown when limit reached
+
+**Example Allocations:**
+- 7 diet + 4 treatment = 11 (full)
+- 6 diet + 5 treatment = 11 (balanced)
+- 5 diet + 6 treatment = 11 (treatment heavy)
+
+When trying to exceed capacity, a professional clinical alert displays with developer contact info.
 
 ## 📖 How to Use
 

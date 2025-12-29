@@ -34,36 +34,41 @@
 ║                                                                            ║
 ║  ✓ Smart Two-Axis Pagination                                              ║
 ║    - Date-based (15 days per page)                                       ║
-║    - Row overflow (diet & treatment items continue on new pages)         ║
-║    - Page 1 optimized (7 diet + 6 treatment items)                       ║
-║    - Overflow pages (6 diet + 5 treatment items)                         ║
+║    - Row overflow management (continues on new pages)                    ║
+║    - Intelligent distribution across multiple pages                      ║
+║                                                                            ║
+║  ✓ Dynamic Row Allocation (NEW)                                            ║
+║    - A4 page hard limit: 11 rows total                                   ║
+║    - Bidirectional balance (diet ↔ treatment)                             ║
+║    - Intelligent capacity adjustment in real-time                        ║
+║    - Clinical alert dialog when limit reached                            ║
+║                                                                            ║
+║  ✓ Row Limit Dialog Component (NEW)                                        ║
+║    - Professional clinical-themed alert                                  ║
+║    - Responsive design (mobile, tablet, desktop)                         ║
+║    - Dynamic limit display based on table state                          ║
+║    - Developer contact info for expansion requests                       ║
 ║                                                                            ║
 ║  ✓ Dynamic Forms & Validation                                              ║
-║    - Real-time input formatting (Title Case, numeric, etc.)              ║
-║    - All required fields validation before print                         ║
+║    - Real-time input formatting & validation                             ║
 ║    - Smart date calculations (prevents past dates)                       ║
-║    - Pre-filled default items (Food, Water, Urine, Stool, Vomiting)     ║
+║    - Pre-filled default diet items                                       ║
 ║                                                                            ║
 ║  ✓ Professional PDF Output                                                 ║
 ║    - A4 Portrait format with proper margins                              ║
-║    - Multi-page support with intelligent page breaks                     ║
-║    - Fixed headers and footers on all pages                              ║
-║    - Watermark logo for professional appearance                          ║
-║    - Signature section (first page only)                                 ║
-║    - Actions column only on first page (hidden on pages 2+)              ║
+║    - Multi-page with intelligent page breaks                             ║
+║    - Headers, footers, watermark, signature section                      ║
 ║                                                                            ║
 ║  ✓ Responsive Web Interface                                                ║
-║    - Mobile (< 640px), Tablet (640-1024px), Desktop (> 1024px)          ║
-║    - Web UI separate from print layout                                   ║
-║    - Add/remove diet & treatment items dynamically                       ║
-║    - Frequency toggle (Once/Twice daily)                                 ║
+║    - Mobile, tablet, desktop layouts                                     ║
+║    - Dynamic add/remove functionality                                    ║
 ║    - One-click print to PDF                                              ║
 ║                                                                            ║
 ║  ✓ Browser-Based (No Backend)                                              ║
-║    - Runs entirely in browser (client-side only)                         ║
-║    - Local data storage (no external APIs)                               ║
-║    - Works offline completely                                            ║
+║    - Client-side only, works offline                                     ║
+║    - Local data storage, no external APIs                                ║
 ║    - Safe with sensitive patient information                             ║
+║
 ║                                                                            ║
 ║                                                                            ║
 ║  TECHNOLOGY STACK                                                         ║
@@ -71,33 +76,34 @@
 ║                                                                            ║
 ║  Frontend:     React 19.2  ·  Vite 7.2  ·  Tailwind CSS 4.1              ║
 ║  Utilities:    JavaScript ES6+  ·  ESLint 9.39                            ║
-║  Runtime:      Node.js (latest LTS)                                      ║
 ║                                                                            ║
-║  Components:   10 reusable components (~1,600 lines JSX)                  ║
-║  Utilities:    3 utility modules (~350 lines JS)                          ║
-║  Styles:       Tailwind CSS + custom media queries (~100 lines)          ║
-║  Total LOC:    ~2,000 lines (well-organized, well-commented)             ║
+║  Components:   11 (including new RowLimitDialog)                          ║
+║  Utilities:    3 modules (dateHelpers, validations, PrintPDF)            ║
+║  Total LOC:    ~2,100 lines (optimized, well-documented)                 ║
+║
 ║                                                                            ║
 ║                                                                            ║
 ║  ARCHITECTURE HIGHLIGHTS                                                  ║
 ║  ─────────────────────────────────────────────────────────────────────   ║
 ║                                                                            ║
-║  ✓ Separation of Concerns                                                  ║
-║    - Web UI (InPatientChart.jsx): 132 lines                              ║
-║    - PDF Layout (PrintPDFDesign.jsx): 242 lines                          ║
-║    - Form Handling (AdmissionForm.jsx): 210 lines                        ║
-║    - Tables (DietPlanTable + TreatmentPlanTable): 368 lines              ║
+║  ✓ Clean Separation of Concerns                                            ║
+║    - Web UI: InPatientChart.jsx (132 lines)                              ║
+║    - PDF Layout: PrintPDFDesign.jsx (327 lines)                          ║
+║    - Alerts: RowLimitDialog.jsx (~80 lines)                              ║
+║    - Forms: AdmissionForm.jsx (210 lines)                                ║
+║    - Tables: DietPlanTable + TreatmentPlanTable (368 lines)              ║
+║                                                                            ║
+║  ✓ Smart Row Management                                                    ║
+║    - Dynamic allocation based on table states                            ║
+║    - Hard limit enforcement (11 rows per A4 page)                        ║
+║    - Bidirectional capacity adjustment                                   ║
+║    - Real-time dialog feedback                                           ║
 ║                                                                            ║
 ║  ✓ State Management                                                        ║
 ║    - Immutable updates with spread operators                             ║
-║    - React.useMemo for date calculations                                 ║
-║    - Proper event handler structure                                      ║
-║    - Clean props passing between components                              ║
-║                                                                            ║
-║  ✓ Reusable Utilities                                                      ║
-║    - dateHelpers.js: Date range & formatting                             ║
-║    - validations.js: Input formatting & validation (8 functions)        ║
-║    - PrintPDF.js: Print trigger functions                                ║
+║    - React.useMemo for optimization                                      ║
+║    - Clean props architecture                                            ║
+║
 ║                                                                            ║
 ║  ✓ Clean Pagination Logic                                                  ║
 ║    - Two-axis system (dates + rows)                                      ║
