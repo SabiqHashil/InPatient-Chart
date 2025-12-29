@@ -58,19 +58,7 @@ const RowLimitDialog = ({ isOpen, tableType = "Diet", maxRows = 7, onClose }) =>
             </p>
           </div>
 
-          {/* Contact Section */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-slate-700 mb-2">
-              For expanding row capacity, contact:
-            </p>
-            <a
-              href="mailto:kabsdigital2020@gmail.com"
-              className="text-indigo-600 hover:text-indigo-700 font-semibold text-xs sm:text-sm break-all drop-shadow-md hover:drop-shadow-lg transition-all"
-            >
-              kabsdigital2020@gmail.com
-            </a>
-          </div>
-        </div>
+          
 
         {/* Footer - Action Button */}
         <div className="bg-slate-50 border-t border-slate-200 px-5 sm:px-6 py-3 sm:py-4">
