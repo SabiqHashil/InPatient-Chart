@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PDFHeader from "./PDFHeader";
 import PDFFooter from "./PDFFooter";
 import AdmissionForm from "./AdmissionForm";
@@ -6,6 +6,7 @@ import DietPlanTable from "./DietPlanTable";
 import TreatmentPlanTable from "./TreatmentPlanTable";
 import SignatureSection from "./SignatureSection";
 import NoteUsage from "./Note-Usage";
+import RowLimitDialog from "./RowLimitDialog";
 
 /**
  * PrintPDFDesign Component
@@ -50,16 +51,58 @@ function PrintPDFDesign({
   onTreatmentAdd,
   isAdmissionFormComplete = false,
 }) {
+  // Smart row distribution for page 1
+  const page1DietMax = 7;
+  const page1TreatmentMax = 6;
+
+  // Dialog state for row limit warnings
+  const [dialogState, setDialogState] = useState({
+    isOpen: false,
+    tableType: "Diet",
+    maxRows: page1DietMax,
+  });
+
+  // Handler to show dialog
+  const showRowLimitDialog = (tableType, maxRows) => {
+    setDialogState({
+      isOpen: true,
+      tableType,
+      maxRows,
+    });
+  };
+
+  // Handler to close dialog
+  const closeRowLimitDialog = () => {
+    setDialogState({
+      ...dialogState,
+      isOpen: false,
+    });
+  };
+
+  // Wrapped onDietAdd with limit check
+  const handleDietAdd = () => {
+    if (dietRows.length >= page1DietMax) {
+      showRowLimitDialog("Diet", page1DietMax);
+      return;
+    }
+    onDietAdd();
+  };
+
+  // Wrapped onTreatmentAdd with limit check
+  const handleTreatmentAdd = () => {
+    if (treatmentRows.length >= page1TreatmentMax) {
+      showRowLimitDialog("Treatment", page1TreatmentMax);
+      return;
+    }
+    onTreatmentAdd();
+  };
+
   // Constants for pagination
   const MAX_DIET_ROWS_PER_PAGE = 6;
   const MAX_TREATMENT_ROWS_PER_PAGE = 5;
   const DAYS_PER_PAGE = 15;
   const DIET_OVERFLOW_ROW_LIMIT = MAX_DIET_ROWS_PER_PAGE + 1;
   const TREATMENT_OVERFLOW_ROW_LIMIT = MAX_TREATMENT_ROWS_PER_PAGE + 1;
-
-  // Smart row distribution for page 1
-  const page1DietMax = 7;
-  const page1TreatmentMax = 6;
 
   // Calculate page count
   const datePages = Math.max(1, Math.ceil(dateCols.length / DAYS_PER_PAGE));
@@ -87,7 +130,14 @@ function PrintPDFDesign({
 
   // Generate PDF pages
   return (
-    <div className="print:p-0 print:m-0">
+    <>
+      <RowLimitDialog
+        isOpen={dialogState.isOpen}
+        tableType={dialogState.tableType}
+        maxRows={dialogState.maxRows}
+        onClose={closeRowLimitDialog}
+      />
+      <div className="print:p-0 print:m-0">
       {Array.from({ length: totalPages }).map((_, pageIndex) => {
         // Determine date slice for this page
         let slice;
@@ -200,7 +250,7 @@ function PrintPDFDesign({
                     isFirstPage={isFirst}
                     onUpdate={onDietUpdate}
                     onRemove={onDietRemove}
-                    onAdd={onDietAdd}
+                    onAdd={handleDietAdd}
                   />
                 </div>
               )}
@@ -215,7 +265,7 @@ function PrintPDFDesign({
                     isFirstPage={isFirst}
                     onUpdate={onTreatmentUpdate}
                     onRemove={onTreatmentRemove}
-                    onAdd={onTreatmentAdd}
+                    onAdd={handleTreatmentAdd}
                   />
                 </div>
               )}
@@ -234,7 +284,8 @@ function PrintPDFDesign({
           </div>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }
 
