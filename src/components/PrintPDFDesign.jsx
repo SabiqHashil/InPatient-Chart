@@ -51,15 +51,15 @@ function PrintPDFDesign({
   isAdmissionFormComplete = false,
 }) {
   // Constants for pagination
-  const MAX_DIET_ROWS_PER_PAGE = 5;
-  const MAX_TREATMENT_ROWS_PER_PAGE = 4;
+  const MAX_DIET_ROWS_PER_PAGE = 6;
+  const MAX_TREATMENT_ROWS_PER_PAGE = 5;
   const DAYS_PER_PAGE = 15;
   const DIET_OVERFLOW_ROW_LIMIT = MAX_DIET_ROWS_PER_PAGE + 1;
   const TREATMENT_OVERFLOW_ROW_LIMIT = MAX_TREATMENT_ROWS_PER_PAGE + 1;
 
   // Smart row distribution for page 1
-  const page1DietMax = 6;
-  const page1TreatmentMax = 5;
+  const page1DietMax = 7;
+  const page1TreatmentMax = 6;
 
   // Calculate page count
   const datePages = Math.max(1, Math.ceil(dateCols.length / DAYS_PER_PAGE));
@@ -197,6 +197,7 @@ function PrintPDFDesign({
                     rows={dietSlice}
                     dateCols={slice}
                     showAddButton={isFirst}
+                    isFirstPage={isFirst}
                     onUpdate={onDietUpdate}
                     onRemove={onDietRemove}
                     onAdd={onDietAdd}
@@ -211,6 +212,7 @@ function PrintPDFDesign({
                     rows={treatmentSlice}
                     dateCols={slice}
                     showAddButton={isFirst}
+                    isFirstPage={isFirst}
                     onUpdate={onTreatmentUpdate}
                     onRemove={onTreatmentRemove}
                     onAdd={onTreatmentAdd}
