@@ -1,86 +1,64 @@
-# In-Patient History Dynamic Chart Generator
+# In-Patient Medical Chart Generator
 
-A specialized medical frontend tool designed for veterinary or clinical environments. This application allows medical staff to manually design and generate structured **Diet** and **Treatment Plan** charts that adjust dynamically based on a patient's admission duration.
+A medical charting tool for veterinary/clinical environments. Quickly create, customize, and print medical charts with admission records, diet plans, and treatment schedules.
 
-## 🚀 Key Features
+## 🎯 Quick Features
 
-* **Dynamic Date Logic**: Automatically generates table columns (Date-wise) based on the calculated range between Admission and Discharge dates.
-* **Real-time Validations**:
-* **Auto-Capitalization**: Names and parameters are automatically formatted to Title Case (e.g., "sabiq hashil" → "Sabiq Hashil").
-* **Smart Date Blocking**: Prevents selection of past dates and ensures Discharge Date is never before Admission Date.
-* **Input Constraints**: File numbers are restricted to numeric values; Cage numbers are forced to uppercase.
+- **Auto-formatting**: Names → Title Case, file numbers → numeric only
+- **Smart dates**: Prevents past dates, generates date columns automatically
+- **Dynamic tables**: Add/remove diet items and medications
+- **Multi-page PDF**: Automatically splits across pages (15 days/page)
+- **Print-optimized**: A4 Landscape layout, perfect for medical paper
 
+## 🚀 Quick Start
 
-* **Medical Plan Customization**:
-* **Diet Plan**: Pre-loaded with standard parameters (Food, Water, Stool, etc.) with the ability to add custom rows.
-* **Treatment Plan**: Detailed medication entry including drug name and dosage (e.g., 2ML).
-* **Frequency Toggle**: Switch between **Once (1x)** and **Twice (2x)** daily marking. "Twice" visually splits the cell for Morning/Evening manual marking.
-
-
-* **Print-First Design**: Optimized for A4 Landscape output. Interactive UI elements (buttons, selectors) are hidden during printing, while signature blocks are revealed.
-
-## 🛠️ Tech Stack
-
-* **Framework**: React (Vite)
-* **Styling**: Tailwind CSS
-* **Icons/UI**: Standard HTML5/CSS3 Print Media Queries
-* **State Management**: React Hooks (`useState`, `useEffect`)
-
-## 📂 Project Structure
-
-```text
-src/
-├── components/
-│   ├── Header.jsx           # Page title and print triggers
-│   ├── AdmissionForm.jsx    # Patient metadata and validation logic
-│   ├── DietPlanTable.jsx    # Dynamic Diet grid with 1x/2x toggle
-│   ├── TreatmentPlanTable.jsx # Medication grid with dosage fields
-│   └── SignatureSection.jsx # Print-only footer for approvals
-├── utils/
-│   ├── dateHelpers.js       # Date range calculation logic
-│   └── validations.js       # String formatting and date constraints
-├── App.jsx                  # Main application orchestrator
-└── index.css                # Tailwind directives and @media print rules
-
-```
-
-## 📋 Installation & Setup
-
-1. **Clone the repository**:
 ```bash
-git clone "https://github.com/SabiqHashil/InPatient-Chart.git"
-cd inpatient-chart
-
-```
-
-
-2. **Install dependencies**:
-```bash
+# Setup
+git clone https://github.com/SabiqHashil/InPatient-Chart.git
+cd InPatient-Chart
 npm install
-
-```
-
-
-3. **Run in development mode**:
-```bash
 npm run dev
 
+# Then open http://localhost:5173
 ```
 
+## 📖 How to Use
 
-4. **Build for production**:
-```bash
-npm run build
+1. **Fill admission form**: Patient name, doctor, dates, diagnosis
+2. **Add diet items**: Pre-filled with Food, Water, Stool, Urine, Vomiting (customize as needed)
+3. **Add medications**: Drug name + dosage
+4. **Set frequency**: Once (1x daily) or Twice (morning/evening)
+5. **Print**: Click "Print Chart" → Select Landscape → Save as PDF
+
+## 🔧 Tech Stack
+
+- **React 19** + **Vite 7** (Frontend)
+- **Tailwind CSS 4** (Styling)
+- **Pure JavaScript** (Utilities)
+
+## 📁 What's Inside
 
 ```
+src/
+├── Pages/InPatientChart.jsx    ← Main logic & state
+├── components/                  ← Form, tables, headers
+└── utils/                        ← Formatting & validation
+```
 
+## 🐛 Common Issues
 
+| Problem | Solution |
+|---------|----------|
+| Chart won't load | Fill admission date first |
+| Wrong dates | Discharge date must be ≥ admission date |
+| Print cuts off | Use Landscape orientation |
 
-## 🖨️ Usage Instructions
+## 📚 Learn More
 
-1. **Enter Admission Details**: Fill out the patient and doctor info. Start with the **Admission Date** to enable the chart generation.
-2. **Customize Rows**: Use the "+ Add" buttons to include specific medications or diet parameters.
-3. **Set Frequency**: Select "2x" for medications that require both morning and evening administration to split the cell.
-4. **Print to PDF**: Click the "Print Chart" button. In the browser print dialog, ensure "Landscape" orientation is selected for the best layout.
+- **For developers**: See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
+- **For certification**: See [Certification.md](Certification.md)
 
 ---
+
+**Status**: Production Ready ✅  
+**Last Updated**: December 29, 2025
