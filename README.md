@@ -1,108 +1,44 @@
 # InPatient Medical Chart
 
-Medical chart PDF generator for veterinary clinics.
+Professional medical chart PDF generator for veterinary clinics.
 
-## Setup
-
-```bash
-npm install && npm run dev
-```
-
-## Usage
-
-1. Fill 11 patient fields
-2. Set dates
-3. Add diet items
-4. Add medications  
-5. Print PDF
-
-## Tech
-
-React 19.2 · Vite 7.2 · Tailwind CSS 4.1
-
-**Status:** ✅ Production Ready
+**Setup:** `npm install && npm run dev`  
+**Status:** ✅ Production Ready  
+**Tech:** React 19.2 · Vite 7.2 · Tailwind CSS 4.1
 
 ## ✨ Key Features
 
-### 📊 Smart Pagination System
-- **Date-Based Pagination:** 15 days per page (automatically splits long admissions into multiple pages)
-- **Row Overflow Handling:** Diet & treatment items continue on new pages when exceeding capacity
-- **Page 1 Optimization:** 7 diet items + 6 treatment items on first page (more space due to admission form)
-- **Overflow Pages:** 6 diet items + 5 treatment items on subsequent pages
-- **Intelligent Distribution:** Automatically calculates and distributes rows across pages
-
-### 📝 Dynamic Forms & Validation
-- Real-time validation with auto-formatting
-- Title case formatting for names
-- Numeric-only input for file/cage numbers
-- Weight validation with decimal support
-- Smart date calculations (prevents past admission dates)
-- Pre-filled default diet items (Food, Water, Urine, Stool, Vomiting)
-- Patient stage selection (Normal, Serious, Critical)
-
-### 🖨️ Professional PDF Output
-- A4 Portrait format with proper margins
-- Multi-page support with intelligent page breaks
-- Clean headers and footers on all pages
-- Admission form on first page only
-- Signature section (first page only)
-- Watermark logo for branding
-- Responsive table layouts (Actions column only on page 1)
-
-### 🎨 User-Friendly Interface
-- Fully responsive design (mobile, tablet, desktop)
-- Web UI with separate print layout
-- Add/remove diet and treatment items dynamically
-- Real-time frequency toggle (Once/Twice daily)
-- One-click print to PDF button
-- Inline editing without page refresh
-- Clear visual feedback for form validation
-
-### ⚡ Technical Advantages
-- No backend required (browser-based)
-- Local data storage (no external APIs)
-- Works offline completely
-- Fast performance (<2s load, <1s print)
-- Zero dependencies on external services
-- Safe with sensitive patient data
-
-## 🛠️ Technology Stack
-
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 19.2+ | UI Component Framework |
-| Vite | 7.2+ | Build Tool & Dev Server |
-| Tailwind CSS | 4.1+ | Responsive Styling |
-| JavaScript | ES6+ | Logic & Utilities |
-| ESLint | 9.39+ | Code Quality |
+- **Smart Pagination:** 15 days/page with intelligent row distribution
+- **Dynamic Forms:** Real-time validation, auto-formatting, pre-filled defaults
+- **Professional PDF:** A4 format, multi-page, headers/footers, watermark, signature section
+- **Responsive UI:** Mobile, tablet, desktop with add/remove functionality
+- **Row Limit Alerts:** Clinical-styled dialog when table capacity reached
+- **Offline Ready:** Browser-based, no backend, local data storage
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
 ```bash
-npm install
+npm install                    # Install
+npm run dev                    # Start dev server (localhost:5173)
+npm run build                  # Build for production
+npm run lint                   # Check code quality
 ```
 
-### 2. Start Development Server
-```bash
-npm run dev
-```
-Opens at `http://localhost:5173`
+## 📋 Usage Steps
 
-### 3. Build for Production
-```bash
-npm run build
-```
+1. Fill 11 patient fields (name, owner, diagnosis, etc.)
+2. Select admission & discharge dates
+3. Add diet items (Food, Water, Urine, etc.)
+4. Add medications with dosage
+5. Click "Print IP Chart" → Save as PDF
 
-### 4. Preview Production Build
-```bash
-npm run preview
-```
+## 🏥 Row Limit System
 
-### 5. Code Quality Check
-```bash
-npm run lint
-```
+**Capacity per page:**
+- Page 1: 7 diet items + 6 treatment items
+- Pages 2+: 6 diet items + 5 treatment items
+
+When limit reached, clinical alert dialog displays with developer contact info for capacity expansion.
 
 ## 📖 How to Use
 
