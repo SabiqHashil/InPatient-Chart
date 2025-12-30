@@ -175,9 +175,9 @@ Utility functions for:
 
 ## 📖 For More Information
 
-- **[Developers Guide](./Developers_Guide.md)** - Architecture, setup, and development workflow
-- **[Allocation Matrix Logic](./AllocationMatrixLogic.md)** - Detailed explanation of the D+T=TT allocation system
-- **[Certification](./Certification.md)** - Project certification and compliance information
+- **[Developer Guide](./DEVELOPER_GUIDE.md)** - Architecture, setup, and development workflow
+- **[Allocation Matrix Logic](./ALLOCATION_MATRIX-LOGIC.md)** - Detailed explanation of the D+T=TT allocation system
+- **[Certification](./CERTIFICATION.md)** - Project certification and compliance information
 
 ---
 

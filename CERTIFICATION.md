@@ -92,8 +92,8 @@
 | Document | Completeness | URL |
 |----------|--------------|-----|
 | README.md | 100% | `./README.md` |
-| Developers_Guide.md | 100% | `./Developers_Guide.md` |
-| AllocationMatrixLogic.md | 100% | `./AllocationMatrixLogic.md` |
+| Developers_Guide.md | 100% | `./DEVELOPER_GUIDE.md` |
+| AllocationMatrixLogic.md | 100% | `./ALLOCATION_MATRIX-LOGIC.md` |
 | Code Comments | 85% | Source files |
 
 ---
