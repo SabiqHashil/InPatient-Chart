@@ -7,6 +7,7 @@ import {
 } from "../utils/validations";
 import { triggerPrintPDF } from "../utils/PrintPDF";
 import PrintPDFDesign from "../components/PrintPDFDesign";
+import RowLimitDialog from "../components/RowLimitDialog";
 import "../index.css";
 import WebFooter from "../components/WebFooter";
 import WebHeader from "../components/WebHeader";
@@ -57,7 +58,31 @@ function InPatientChart() {
     setRows(rows.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
   };
 
-  const removeRow = (setRows, rows, id) => {
+  const [deleteDialogState, setDeleteDialogState] = useState({
+    isOpen: false,
+    tableType: "Diet",
+    maxRows: 0,
+    dietRowCount: dietRows.length,
+    treatmentRowCount: treatmentRows.length,
+    maxTotalRows: 11,
+    mode: "limit",
+  });
+
+  const removeRow = (tableType, setRows, rows, id) => {
+    // Prevent deleting the last remaining row in a table
+    if (!Array.isArray(rows) || rows.length <= 1) {
+      setDeleteDialogState({
+        isOpen: true,
+        tableType: tableType,
+        maxRows: rows.length,
+        dietRowCount: dietRows.length,
+        treatmentRowCount: treatmentRows.length,
+        maxTotalRows: 11,
+          mode: "delete-warning",
+        });
+      return;
+    }
+
     setRows(rows.filter((r) => r.id !== id));
   };
 
@@ -88,6 +113,19 @@ function InPatientChart() {
         </div>
 
         {/* Content Container - PDF Design */}
+        <RowLimitDialog
+          isOpen={deleteDialogState.isOpen}
+          tableType={deleteDialogState.tableType}
+          maxRows={deleteDialogState.maxRows}
+          dietRowCount={deleteDialogState.dietRowCount}
+          treatmentRowCount={deleteDialogState.treatmentRowCount}
+          maxTotalRows={deleteDialogState.maxTotalRows}
+          mode={deleteDialogState.mode}
+          onClose={() =>
+            setDeleteDialogState({ ...deleteDialogState, isOpen: false })
+          }
+        />
+
         <PrintPDFDesign
           dateCols={dateCols}
           header={header}
@@ -97,7 +135,7 @@ function InPatientChart() {
           onDietUpdate={(id, field, val) =>
             updateRow(setDietRows, dietRows, id, field, val)
           }
-          onDietRemove={(id) => removeRow(setDietRows, dietRows, id)}
+          onDietRemove={(id) => removeRow("Diet", setDietRows, dietRows, id)}
           onDietAdd={() =>
             addRow(setDietRows, dietRows, { label: "", type: "Once" })
           }
@@ -105,7 +143,7 @@ function InPatientChart() {
             updateRow(setTreatmentRows, treatmentRows, id, field, val)
           }
           onTreatmentRemove={(id) =>
-            removeRow(setTreatmentRows, treatmentRows, id)
+            removeRow("Treatment", setTreatmentRows, treatmentRows, id)
           }
           onTreatmentAdd={() =>
             addRow(setTreatmentRows, treatmentRows, {

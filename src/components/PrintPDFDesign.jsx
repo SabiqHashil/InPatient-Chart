@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import PDFHeader from "./PDFHeader";
 import PDFFooter from "./PDFFooter";
 import AdmissionForm from "./AdmissionForm";
@@ -7,11 +7,16 @@ import TreatmentPlanTable from "./TreatmentPlanTable";
 import SignatureSection from "./SignatureSection";
 import NoteUsage from "./Note-Usage";
 import RowLimitDialog from "./RowLimitDialog";
+import {
+  generateStructuredAllocationTable,
+  generateDefaultAllocationTable,
+  generateComplementaryAllocationTables,
+} from "../utils/AllocationMatrix";
 
 /**
  * PrintPDFDesign Component
  * ========================
- * Handles all PDF layout and design
+ * Handles all PDF layout and design with Dynamic Row Allocation
  *
  * This component is responsible for:
  * - PDF page layout and structure
@@ -19,6 +24,13 @@ import RowLimitDialog from "./RowLimitDialog";
  * - Print-specific styling and design
  * - Header and footer placement
  * - Signature section layout
+ * - Dynamic row allocation based on D + T = TT formula
+ *
+ * Dynamic Allocation Logic:
+ * - TT (Total) = 11 (A4 page hard limit)
+ * - D (Diet) + T (Treatment) = TT
+ * - Automatically calculates page1DietMax and page1TreatmentMax
+ *   based on current row counts using mathematical constraints
  *
  * Usage:
  *   <PrintPDFDesign
@@ -37,6 +49,155 @@ import RowLimitDialog from "./RowLimitDialog";
  *   />
  */
 
+/**
+ * Allocation Table Display Component
+ * Shows current D+T allocation with all valid combinations
+ */
+/* AllocationTableDisplay removed — keeping only allocation logic in this file. */
+
+/**
+ * ===================================
+ * DYNAMIC ROW ALLOCATION UTILITIES
+ * ===================================
+ * Generates all possible combinations where D + T = TT
+ */
+
+/**
+ * Generates all possible combinations of Diet (D) and Treatment (T)
+ * where D + T = TT (Total)
+ *
+ * @param {number} total - The total capacity (TT)
+ * @param {number} minDiet - Minimum diet rows (default: 1)
+ * @param {number} minTreatment - Minimum treatment rows (default: 1)
+ * @returns {Array} Array of {diet, treatment, dominance} combinations
+ *
+ * Example: generateAllCombinations(11) returns:
+ * [{diet: 1, treatment: 10, dominance: 'T > D'}, ...]
+ */
+const generateAllCombinations = (total, minDiet = 1, minTreatment = 1) => {
+  const combinations = [];
+
+  for (let d = minDiet; d <= total - minTreatment; d++) {
+    const t = total - d;
+    let dominance = "D = T";
+
+    if (d > t) {
+      dominance = "D > T";
+    } else if (t > d) {
+      dominance = "T > D";
+    }
+
+    combinations.push({
+      diet: d,
+      treatment: t,
+      dominance,
+      total,
+    });
+  }
+
+  return combinations;
+};
+
+/**
+ * Finds the best allocation for Diet and Treatment tables
+ * with DYNAMIC FLEXIBLE REALLOCATION
+ *
+ * Key Logic:
+ * - Available capacity for Diet = 11 - current_treatment
+ * - Available capacity for Treatment = 11 - current_diet
+ * - Each table can grow/shrink based on the OTHER table's size
+ * - Still respects individual max constraints: maxDiet=7, maxTreatment=6
+ *
+ * Real Examples with current state (D=5, T=1):
+ * - Diet can grow to: min(7, 11-1) = 7, BUT reaches 10 when T doesn't grow
+ * - Treatment can grow to: min(6, 11-5) = 6 (full capacity available!)
+ * - Scenario 1: Keep T=1, add 5 to D → D=10, T=1, Total=11 ✓
+ * - Scenario 2: Keep D=5, add 5 to T → D=5, T=6, Total=11 ✓
+ *
+ * @param {number} currentDietCount - Current number of diet rows
+ * @param {number} currentTreatmentCount - Current number of treatment rows
+ * @param {number} totalCapacity - Total capacity (TT = 11)
+ * @param {number} maxIndividualDiet - Maximum diet rows allowed (default: 7)
+ * @param {number} maxIndividualTreatment - Maximum treatment rows allowed (default: 6)
+ * @returns {Object} {page1DietMax, page1TreatmentMax, allocationStrategy, availableCapacity}
+ */
+const calculateOptimalAllocation = (
+  currentDietCount,
+  currentTreatmentCount,
+  totalCapacity = 11,
+  maxIndividualDiet = 7,
+  maxIndividualTreatment = 6,
+  allowSoftIndividualLimit = true
+) => {
+  // Calculate remaining capacity available for each table
+  const remainingForDiet = totalCapacity - currentTreatmentCount;
+  const remainingForTreatment = totalCapacity - currentDietCount;
+
+  // Diet/Treatment can grow up to the remaining capacity. If soft limits
+  // are allowed we let them grow beyond the individual suggested max.
+  const dietMax = allowSoftIndividualLimit
+    ? remainingForDiet
+    : Math.min(maxIndividualDiet, remainingForDiet);
+
+  const treatmentMax = allowSoftIndividualLimit
+    ? remainingForTreatment
+    : Math.min(maxIndividualTreatment, remainingForTreatment);
+
+  // Generate all valid combinations for reference
+  const combinations = generateAllCombinations(totalCapacity, 1, 1);
+
+  // Determine dominance strategy
+  let allocationStrategy = "Balanced";
+  if (dietMax > treatmentMax) {
+    allocationStrategy = "D > T";
+  } else if (treatmentMax > dietMax) {
+    allocationStrategy = "T > D";
+  }
+
+  return {
+    page1DietMax: dietMax,
+    page1TreatmentMax: treatmentMax,
+    allocationStrategy: allocationStrategy,
+    combinations: combinations,
+    selectedCombination: {
+      diet: dietMax,
+      treatment: treatmentMax,
+      dominance: allocationStrategy,
+    },
+    availableCapacity: {
+      forDiet: remainingForDiet,
+      forTreatment: remainingForTreatment,
+    },
+  };
+};
+
+/**
+ * Generates a detailed allocation table for debugging/logging
+ * Shows all possible combinations with current allocation highlighted
+ */
+const generateAllocationTable = (
+  currentDietCount,
+  currentTreatmentCount,
+  totalCapacity = 11
+) => {
+  const combinations = generateAllCombinations(totalCapacity);
+
+  return {
+    totalCombinations: combinations.length,
+    allCombinations: combinations,
+    currentAllocation: {
+      diet: currentDietCount,
+      treatment: currentTreatmentCount,
+      total: currentDietCount + currentTreatmentCount,
+    },
+    remainingCapacity: {
+      diet: totalCapacity - currentDietCount,
+      treatment: totalCapacity - currentTreatmentCount,
+      overall: totalCapacity - (currentDietCount + currentTreatmentCount),
+    },
+  };
+};
+
 function PrintPDFDesign({
   dateCols = [],
   header = {},
@@ -51,46 +212,83 @@ function PrintPDFDesign({
   onTreatmentAdd,
   isAdmissionFormComplete = false,
 }) {
-  // Smart row distribution for page 1 - Bidirectional Dynamic Allocation
-  // Total capacity = 11 rows (flexible distribution) - A4 page limit
-  // Base: Diet max 7, Treatment max 4
-  // Dynamically adjusts based on BOTH table row counts
+  // ===================================
+  // DYNAMIC ROW ALLOCATION (D + T = TT)
+  // ===================================
+  const TOTAL_CAPACITY = 11; // TT = 11 (A4 page hard limit)
+  const MAX_DIET_INDIVIDUAL = 7; // Maximum diet rows (individual constraint)
+  const MAX_TREATMENT_INDIVIDUAL = 6; // Maximum treatment rows (individual constraint)
 
-  let page1DietMax = 7;
-  let page1TreatmentMax = 4;
+  // When true, individual max constraints are treated as "soft" —
+  // the table can grow beyond the individual suggested maximum
+  // if the other table is small and total capacity allows it.
+  // Set to `false` to enforce strict individual limits.
+  const ALLOW_SOFT_INDIVIDUAL_LIMIT = true;
 
-  // === DIET-DRIVEN ALLOCATION ===
-  // Adjust treatment capacity based on diet row count
-  if (dietRows.length >= 7) {
-    // Diet is at max (7 rows) → treatment limited to 4
-    page1TreatmentMax = 4;
-  } else if (dietRows.length === 6) {
-    // Diet has 6 rows → treatment can have 5
-    page1TreatmentMax = 5;
-  } else if (dietRows.length <= 5) {
-    // Diet has 5 or less → treatment can expand to 6
-    page1TreatmentMax = 6;
-  }
+  // Calculate optimal allocation based on current row counts
+  const allocation = calculateOptimalAllocation(
+    dietRows.length,
+    treatmentRows.length,
+    TOTAL_CAPACITY,
+    MAX_DIET_INDIVIDUAL,
+    MAX_TREATMENT_INDIVIDUAL,
+    ALLOW_SOFT_INDIVIDUAL_LIMIT
+  );
 
-  // === TREATMENT-DRIVEN ALLOCATION (Bidirectional) ===
-  // Adjust diet capacity based on treatment row count
-  if (treatmentRows.length >= 7) {
-    // Treatment is at max (7 rows) → diet limited to 4
-    page1DietMax = 4;
-  } else if (treatmentRows.length === 6) {
-    // Treatment has 6 rows → diet can have 5
-    page1DietMax = 5;
-  } else if (treatmentRows.length <= 5) {
-    // Treatment has 5 or less → diet can stay at 7
-    page1DietMax = 7;
-  }
+  let page1DietMax = allocation.page1DietMax;
+  let page1TreatmentMax = allocation.page1TreatmentMax;
 
   // Dialog state for row limit warnings
   const [dialogState, setDialogState] = useState({
     isOpen: false,
     tableType: "Diet",
-    maxRows: page1DietMax, // Will dynamically update based on treatment rows
+    maxRows: page1DietMax, // Dynamically updated
   });
+
+  // Generate structured allocation tables for display
+  const structuredTable = useMemo(() => {
+    return generateStructuredAllocationTable(TOTAL_CAPACITY, "all", "asc");
+  }, [TOTAL_CAPACITY]);
+
+  const defaultAllocationTable = useMemo(() => {
+    return generateDefaultAllocationTable(
+      dietRows.length,
+      treatmentRows.length,
+      TOTAL_CAPACITY
+    );
+  }, [dietRows.length, treatmentRows.length, TOTAL_CAPACITY]);
+
+  const complementaryTables = useMemo(() => {
+    return generateComplementaryAllocationTables(TOTAL_CAPACITY);
+  }, [TOTAL_CAPACITY]);
+
+  // Log allocation strategy for debugging
+  React.useEffect(() => {
+    const allocationTable = generateAllocationTable(
+      dietRows.length,
+      treatmentRows.length,
+      TOTAL_CAPACITY
+    );
+    console.log("=== ROW ALLOCATION TABLE ===");
+    console.log("All Valid Combinations (D + T = 11):");
+    allocationTable.allCombinations.forEach((combo, idx) => {
+      console.log(
+        `${idx + 1}. D=${combo.diet} | T=${combo.treatment} | TT=${combo.total} | ${combo.dominance}`
+      );
+    });
+    console.log("\nCurrent Allocation:");
+    console.log(`Diet: ${allocationTable.currentAllocation.diet}`);
+    console.log(`Treatment: ${allocationTable.currentAllocation.treatment}`);
+    console.log(`Total Used: ${allocationTable.currentAllocation.total}/${TOTAL_CAPACITY}`);
+    console.log("\nSelected Strategy:", allocation.allocationStrategy);
+    console.log("Page 1 Diet Max:", page1DietMax);
+    console.log("Page 1 Treatment Max:", page1TreatmentMax);
+    console.log("\n=== STRUCTURED ALLOCATION DATA ===");
+    console.log("Structured Table:", structuredTable);
+    console.log("Default Allocation:", defaultAllocationTable);
+    console.log("Complementary Tables:", complementaryTables);
+    console.log("===========================\n");
+  }, [dietRows.length, treatmentRows.length, page1DietMax, page1TreatmentMax, TOTAL_CAPACITY, allocation.allocationStrategy, structuredTable, defaultAllocationTable, complementaryTables]);
 
   // Calculate total rows on current page
   const totalRowsOnPage = dietRows.length + treatmentRows.length;
@@ -181,6 +379,9 @@ function PrintPDFDesign({
         isOpen={dialogState.isOpen}
         tableType={dialogState.tableType}
         maxRows={dialogState.maxRows}
+        dietRowCount={dietRows.length}
+        treatmentRowCount={treatmentRows.length}
+        maxTotalRows={maxTotalRows}
         onClose={closeRowLimitDialog}
       />
       <div className="print:p-0 print:m-0">
@@ -258,11 +459,11 @@ function PrintPDFDesign({
               style={{ pageBreakAfter: isLast ? "auto" : "always" }}
             >
               {/* WATERMARK LOGO */}
-              <div className="hidden print:block print:absolute print:top-0 print:left-0 print:w-full print:h-full print:flex print:items-center print:justify-center print:pointer-events-none print:z-0">
+              <div className="hidden print:flex print:absolute print:top-0 print:left-0 print:w-full print:h-full print:items-center print:justify-center print:pointer-events-none print:z-0">
                 <img
                   src="/mypetsa-logo.png"
                   alt="MyPetsa Logo Watermark"
-                  className="print:max-w-[300px] print:max-h-[300px] print:opacity-10 print:object-contain"
+                  className="print:max-w-75 print:max-h-75 print:opacity-10 print:object-contain"
                 />
               </div>
 

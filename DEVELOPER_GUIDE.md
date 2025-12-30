@@ -1,1363 +1,466 @@
-# Developer Guide - InPatient Medical Chart
+# Developers Guide - InPatient Chart
 
-## Architecture
-
-```
-App.jsx
-  └── InPatientChart.jsx (State Management)
-      ├── AdmissionForm.jsx (Patient info)
-      ├── DietPlanTable.jsx (Diet tracking)
-      ├── TreatmentPlanTable.jsx (Medications)
-      └── PrintPDFDesign.jsx (PDF layout + pagination)
-          ├── RowLimitDialog.jsx (Capacity alerts) ✨ NEW
-          ├── PDFHeader.jsx
-          ├── PDFFooter.jsx
-          └── SignatureSection.jsx
-```
-
-## Key Components
-
-| Component | Role | Lines |
-|-----------|------|-------|
-| InPatientChart.jsx | State mgmt, handlers | 132 |
-| PrintPDFDesign.jsx | PDF layout, limits | 327 |
-| RowLimitDialog.jsx | Alert dialog | ~80 |
-| AdmissionForm.jsx | Patient form | 210 |
-| DietPlanTable.jsx | Diet tracking | 177 |
-| TreatmentPlanTable.jsx | Medications | 191 |
-
-## State
-
-```javascript
-// InPatientChart.jsx
-const [header, setHeader] = useState({
-  fileNo, petName, ownerName, doctor, assistantName,
-  cageNo, diagnosis, admissionDate, dischargeDate,
-  weight, patientStage
-});
-
-const [dietRows, setDietRows] = useState([
-  { id: 1, label: "Food", type: "Once" },
-  { id: 2, label: "Water", type: "Once" },
-  // ... default items
-]);
-
-const [treatmentRows, setTreatmentRows] = useState([
-  { id: 101, label: "", dose: "", type: "Twice" }
-]);
-```
-
-## Dynamic Row Allocation (NEW FEATURE)
-
-**A4 Page Limit: 11 rows total (flexible distribution)**
-
-```javascript
-// In PrintPDFDesign.jsx
-let page1DietMax = 7;      // Base max
-let page1TreatmentMax = 4; // Base max
-
-// Diet-driven allocation
-if (dietRows.length >= 7)      → page1TreatmentMax = 4
-else if (dietRows.length === 6) → page1TreatmentMax = 5
-else if (dietRows.length <= 5)  → page1TreatmentMax = 6
-
-// Treatment-driven allocation (bidirectional)
-if (treatmentRows.length >= 7)      → page1DietMax = 4
-else if (treatmentRows.length === 6) → page1DietMax = 5
-else if (treatmentRows.length <= 5)  → page1DietMax = 7
-
-// Hard total limit
-if (totalRows >= 11) → Block addition
-```
-
-**Example Allocations:**
-- 7 diet + 4 treatment = 11 (diet heavy)
-- 6 diet + 5 treatment = 11 (balanced)
-- 5 diet + 6 treatment = 11 (treatment heavy)
-
-## RowLimitDialog Component
-
-**Location:** `src/components/RowLimitDialog.jsx`
-
-**Features:**
-- Clinical-themed alert dialog
-- Responsive (mobile, tablet, desktop)
-- Displays dynamic limits
-- Shows developer contact info
-- Single "Understood" button
-
-**Props:**
-```javascript
-<RowLimitDialog
-  isOpen={boolean}
-  tableType="Diet" | "Treatment"
-  maxRows={number}
-  onClose={() => {}}
-/>
-```
-
-## Pagination System
-
-**Two-Axis:**
-1. **Dates:** 15 days per page
-2. **Rows:** Overflow to new pages
-
-```javascript
-const DAYS_PER_PAGE = 15;
-datePages = ⌈totalDays / 15⌉
-```
-
-## Utilities
-
-### dateHelpers.js
-- `getDatesInRange(start, end)` → date array
-- `formatDateDDMonYYYY(date)` → "15-Jan-2025"
-
-### validations.js
-- `formatName(str)` → Title Case
-- `formatFileNumber(str)` → Numbers only
-- `formatWeight(str)` → Decimal numbers
-- `formatCageNo(str)` → Uppercase + space
-- `isAdmissionFormComplete(header)` → boolean
-- `updateDocumentTitle(...)` → Sets browser title
-
-### PrintPDF.js
-- `triggerPrintPDF()` → Opens print dialog
-
-## Update Pattern
-
-```javascript
-setHeader({ ...header, [name]: value })
-setRows(rows.map(r => r.id === id ? { ...r, [field]: value } : r))
-setRows(rows.filter(r => r.id !== id))
-setRows(prev => [...prev, { ...defaultObj, id: ++nextId.current }])
-```
-
-## Form Validation
-
-| Field | Rule | Format |
-|-------|------|--------|
-| fileNo | Numeric | `123456` |
-| petName | Title case | `Max Cooper` |
-| weight | Decimal | `5.5` |
-| cageNo | Uppercase | `IP 1` |
-| admission | Not past | `2025-01-15` |
-
-## Commands
-
-```bash
-npm install              # Install
-npm run dev             # Dev server
-npm run build           # Production
-npm run lint            # Code check
-```
-
-## Browser Support
-
-✅ Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
-
-## Performance
-
-- Load: <2s
-- Print: <1s
-- Memory: <10MB
-- PDF: 50-150KB
-
-## Common Tasks
-
-### Change row limit
-Edit `PrintPDFDesign.jsx`:
-```javascript
-const maxTotalRows = 11;  // Adjust here
-```
-
-### Add form field
-1. Add to state (InPatientChart.jsx)
-2. Add InputField (AdmissionForm.jsx)
-3. Add validation (validations.js)
-
-### Customize dialog
-Edit `RowLimitDialog.jsx` colors, text, styling
-
-### Change PDF styling
-Edit `index.css` print media or use `print:` Tailwind classes
+A comprehensive guide for developers setting up, developing, and maintaining the InPatient Chart application.
 
 ---
 
-**Status:** Production Ready ✅  
-**Last Updated:** December 29, 2025
-1. [Architecture Overview](#architecture-overview)
-2. [Component Responsibilities](#component-responsibilities)
-3. [State Management](#state-management)
-4. [Pagination System](#pagination-system)
-5. [Form Validation & Formatting](#form-validation--formatting)
-6. [Print to PDF](#print-to-pdf)
-7. [Development Setup](#development-setup)
-8. [Common Tasks](#common-tasks)
-9. [Debugging](#debugging)
-10. [Performance Optimization](#performance-optimization)
+## 📋 Table of Contents
 
-## Architecture Overview
+1. [Development Environment Setup](#development-environment-setup)
+2. [Project Architecture](#project-architecture)
+3. [Component Structure](#component-structure)
+4. [State Management](#state-management)
+5. [Development Workflow](#development-workflow)
+6. [Code Quality & Linting](#code-quality--linting)
+7. [Common Tasks](#common-tasks)
+8. [Troubleshooting](#troubleshooting)
 
-### Component Tree
+---
+
+## 🛠️ Development Environment Setup
+
+### Prerequisites
+
+- **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
+- **npm** (v7 or higher) - Comes with Node.js
+- **Git** - For version control
+- **Text Editor/IDE** - VS Code recommended
+
+### Initial Setup
+
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd InPatient-Chart
+
+# 2. Install all dependencies
+npm install
+
+# 3. Start the development server
+npm run dev
+
+# 4. Open browser and navigate to
+# http://localhost:5173
 ```
-App.jsx (root)
-  └── InPatientChart.jsx (main page - state management)
-      ├── WebHeader (web UI header, print button)
-      ├── AdmissionForm (patient info - web mode)
-      └── PrintPDFDesign (PDF layout & pagination)
-          ├── PDFHeader (all pages)
-          ├── AdmissionForm (page 1 only - print mode)
-          ├── DietPlanTable (dynamic content)
-          ├── TreatmentPlanTable (dynamic content)
-          ├── SignatureSection (page 1 only)
-          └── PDFFooter (all pages)
-      └── WebFooter (web UI footer)
+
+### VS Code Extensions (Recommended)
+
+- **ES7+ React/Redux/React-Native snippets** - dsznajder.es7-react-js-snippets
+- **Tailwind CSS IntelliSense** - bradlc.vscode-tailwindcss
+- **ESLint** - dbaeumer.vscode-eslint
+- **Prettier** - esbenp.prettier-vscode
+
+---
+
+## 🏗️ Project Architecture
+
+### High-Level Flow
+
+```
+User Browser
+    ↓
+App.jsx (Root)
+    ↓
+InPatientChart.jsx (Page)
+├── State Management (Header, Diet Rows, Treatment Rows)
+├── Event Handlers (Add, Remove, Update rows)
+│   ↓
+├── PrintPDFDesign.jsx
+│   ├── Allocation Logic (D+T=TT)
+│   ├── PDF Layout
+│   ├── DietPlanTable
+│   ├── TreatmentPlanTable
+│   ├── PDFHeader/Footer
+│   └── SignatureSection
+│
+└── UI Components (Web-only)
+    ├── WebHeader (Print button)
+    ├── AdmissionForm
+    └── WebFooter
 ```
 
 ### Key Design Principles
-- **Separation of Concerns:** Web UI (`InPatientChart`) separate from PDF layout (`PrintPDFDesign`)
-- **Immutable State:** All updates use spread operators for React optimization
-- **Memoization:** Date calculations memoized to prevent unnecessary recalculations
-- **Responsive Design:** Tailwind `print:` prefix for print-specific styling
-- **Component Isolation:** Each component manages its own UI and behavior
 
-## Component Responsibilities
+1. **Separation of Concerns**
+   - Page components handle state
+   - Components handle UI rendering
+   - Utils handle business logic
 
-### 🎯 InPatientChart.jsx (132 lines)
-**Role:** Main state container and web UI orchestrator
+2. **Print-First Design**
+   - All components have print CSS classes
+   - `print:` prefix for print-specific styling
+   - Hidden web UI elements during print
 
-**Manages:**
-- Patient header data (fileNo, petName, ownerName, etc.)
-- Diet rows array with CRUD operations
-- Treatment rows array with CRUD operations
-- Document title updates based on form data
+3. **Dynamic Allocation**
+   - Centralized allocation logic in PrintPDFDesign.jsx
+   - Calculated on every render via `useMemo`
+   - Real-time row limit validation
 
-**Key Functions:**
+---
+
+## 🧩 Component Structure
+
+### Page Component: `InPatientChart.jsx`
+
+**Responsibility**: Main page state and orchestration
+
+**State Managed**:
 ```javascript
-const handleHeaderChange(e)           // Update header field
-const updateRow(setRows, rows, id, field, value)  // Modify row property
-const removeRow(setRows, rows, id)   // Delete row
-const addRow(setRows, rows, defaultObj)           // Create new row
+header          // Patient info (name, diagnosis, dates, etc.)
+dateCols        // Array of dates between admission & discharge
+dietRows        // Array of diet observation entries
+treatmentRows   // Array of treatment entries
+deleteDialogState // Warning dialog state for delete attempts
 ```
 
-**State Structure:**
+**Key Handlers**:
 ```javascript
-header = {
-  fileNo: string,          // Unique identifier
-  petName: string,         // Patient name
-  ownerName: string,       // Owner name
-  doctor: string,          // Attending vet
-  assistantName: string,   // Assistant staff
-  cageNo: string,          // Location
-  diagnosis: string,       // Medical diagnosis
-  admissionDate: YYYY-MM-DD,
-  dischargeDate: YYYY-MM-DD,
-  weight: number,          // kg
-  patientStage: "Normal"|"Serious"|"Critical"
-}
-
-dietRows = [
-  { id: number, label: string, type: "Once"|"Twice" }
-]
-
-treatmentRows = [
-  { id: number, label: string, dose: string, type: "Once"|"Twice" }
-]
+handleHeaderChange()    // Update patient info
+updateRow()            // Modify a specific row's field
+removeRow()            // Delete a row with validation
+addRow()               // Add new row to table
 ```
 
-### 📄 PrintPDFDesign.jsx (242 lines)
-**Role:** PDF layout engine with intelligent pagination
+### Main Component: `PrintPDFDesign.jsx`
 
-**Responsibilities:**
-- Calculate total pages needed (date-based + row overflow)
-- Slice dates and rows for each page
-- Render page components with correct data
-- Apply print-specific styling
+**Responsibility**: PDF layout and row allocation logic
 
-**Pagination Constants:**
+**Key Functions**:
 ```javascript
-const DAYS_PER_PAGE = 15;                        // Dates per page
-const MAX_DIET_ROWS_PER_PAGE = 6;               // Overflow capacity
-const MAX_TREATMENT_ROWS_PER_PAGE = 5;          // Overflow capacity
-const PAGE_1_DIET_MAX = 7;                      // Page 1 capacity
-const PAGE_1_TREATMENT_MAX = 6;                 // Page 1 capacity
+generateAllCombinations(total)
+  // Returns all valid D+T combinations where D+T=total
+
+calculateOptimalAllocation(currentDiet, currentTreatment)
+  // Calculates maximum allowed rows for each table
+  // Returns: {page1DietMax, page1TreatmentMax, strategy, availableCapacity}
 ```
 
-**Page Calculation Logic:**
+**Props Received**:
 ```javascript
-datePages = ⌈dateCols.length / 15⌉
-dietOverflowPages = ⌈(dietRows.length - 7) / 6⌉ if dietRows > 7, else 0
-treatmentOverflowPages = ⌈(treatmentRows.length - 6) / 5⌉ if treatmentRows > 6, else 0
-totalPages = datePages + dietOverflowPages + treatmentOverflowPages
+dateCols                 // Dates to display as columns
+header                   // Patient info
+dietRows/treatmentRows   // Current entries
+onDietUpdate/Remove/Add  // Event callbacks
+onTreatmentUpdate/Remove/Add
+isAdmissionFormComplete  // Validation flag
 ```
 
-### 📋 AdmissionForm.jsx (210 lines)
-**Role:** Patient information input and display
+### Table Components: `DietPlanTable.jsx` & `TreatmentPlanTable.jsx`
 
-**Features:**
-- Grid layout (responsive: 2-4 columns)
-- Real-time input formatting via `handleInputChange`
-- Conditional rendering: Edit mode (web) vs Read-only mode (print)
-- Patient stage selection (color-coded badges)
-- Dynamic days calculation display
+**Responsibility**: Render table UI and handle row-level interactions
 
-**Formatting Applied:**
-| Field | Formatter | Example |
-|-------|-----------|---------|
-| petName, ownerName, doctor, diagnosis | `formatName` | "john doe" → "John Doe" |
-| fileNo | `formatFileNumber` | "abc123" → "123" |
-| cageNo | `formatCageNo` | "ip1" → "IP 1" |
-| weight | `formatWeight` | "5kg" → "5" |
+**Features**:
+- Responsive table layout (mobile-friendly)
+- Add/Remove row buttons
+- Print-specific CSS for A4 formatting
+- Input validation for fields
 
-### 📊 DietPlanTable.jsx (177 lines)
-**Role:** Diet monitoring table with dynamic rows
+### Dialog Component: `RowLimitDialog.jsx`
 
-**Features:**
-- Dynamic date columns (passed via `dateCols` prop)
-- Add/remove diet items (+ Add Item / trash icon)
-- Frequency toggle (Once/Twice dropdown)
-- **Actions column:** Only visible when `isFirstPage={true}`
-- Responsive: Horizontal scroll on mobile, fixed layout on print
-- Diagonal line visual for "Twice" frequency entries
+**Responsibility**: Display warnings for invalid user actions
 
-**Props:**
+**Modes**:
+- `limit`: Shows capacity alert with current row counts
+- `delete-warning`: Shows deletion prevention message
+
+**Props**:
 ```javascript
-rows: Array<{id, label, type}>
-dateCols: Array<string>              // e.g., ["1-Jan", "2-Jan", ...]
-isFirstPage: boolean                 // Show actions column?
-onUpdate: (id, field, value) => void
-onRemove: (id) => void
-onAdd: () => void
-showAddButton: boolean               // Show + button?
-```
-
-### 💊 TreatmentPlanTable.jsx (191 lines)
-**Role:** Medication tracking with dosage
-
-**Features:**
-- Medicine name input (title case formatting)
-- Dosage field (free text: "500mg", "2ml", etc.)
-- Frequency toggle (Once/Twice daily)
-- Dynamic date columns
-- **Actions column:** Only visible when `isFirstPage={true}`
-- Diagonal line visual for "Twice" frequency entries
-
-**Props:** (Same structure as DietPlanTable)
-
-### 🛠️ Utility Modules
-
-#### dateHelpers.js
-```javascript
-getDatesInRange(startDate, endDate): string[]
-// Returns: ["1-Jan", "2-Jan", "3-Jan", ...]
-
-formatDateDDMonYYYY(dateStr): string
-// "2025-01-15" → "15-Jan-2025"
-```
-
-**Usage:**
-```javascript
-const dateCols = React.useMemo(() => 
-  getDatesInRange(header.admissionDate, header.dischargeDate)
-, [header.admissionDate, header.dischargeDate]);
-```
-
-#### validations.js
-Comprehensive input formatting and validation:
-
-```javascript
-// Formatting Functions
-formatName(value)           // Title Case
-formatFileNumber(value)     // Numeric only
-formatWeight(value)         // Numeric + decimal
-formatCageNo(value)         // Uppercase + space
-formatMedicine(value)       // Title Case (alias to formatName)
-getTodayDate()             // Returns YYYY-MM-DD for date input min
-
-// Validation Functions
-isAdmissionFormComplete(header): boolean  // All required fields filled?
-updateDocumentTitle(fileNo, admissionDate): void  // Set browser title
-```
-
-#### PrintPDF.js
-```javascript
-triggerPrintPDF(): void     // Opens browser print dialog
-
-triggerPrintPDFWithOptions(options: {
-  filename?: string,        // PDF filename suggestion
-  delay?: number           // Milliseconds before printing
-}): void
-```
-
-## State Management
-
-### Pattern: Immutable Updates
-All state updates follow React best practices using immutable patterns:
-
-```javascript
-// Update object property
-setHeader({ ...header, [name]: value })
-
-// Update array item
-setRows(rows.map(r => r.id === id ? { ...r, [field]: value } : r))
-
-// Remove item
-setRows(rows.filter(r => r.id !== id))
-
-// Add item with new ID
-setRows((prev) => [...prev, { ...defaultObj, id: ++nextId.current }])
-```
-
-### Callback Handlers
-All handlers in `InPatientChart.jsx`:
-
-```javascript
-const handleHeaderChange = (e) => {
-  setHeader({ ...header, [e.target.name]: e.target.value });
-};
-
-const updateRow = (setRows, rows, id, field, value) => {
-  setRows(rows.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
-};
-
-const removeRow = (setRows, rows, id) => {
-  setRows(rows.filter((r) => r.id !== id));
-};
-
-const addRow = (setRows, rows, defaultObj) => {
-  setRows((prev) => [...prev, { ...defaultObj, id: ++nextId.current }]);
-};
-```
-
-### Memoization
-Date calculation is memoized to prevent unnecessary recalculations:
-
-```javascript
-const dateCols = React.useMemo(() => {
-  if (header.admissionDate && header.dischargeDate) {
-    return getDatesInRange(header.admissionDate, header.dischargeDate);
-  }
-  return [];
-}, [header.admissionDate, header.dischargeDate]);
-// Only recalculates if dates change
-```
-
-## Pagination System
-
-### Two-Axis Pagination Strategy
-
-**Axis 1: Date-Based Pagination**
-- Splits content into pages based on 15-day chunks
-- Each page shows a 15-day date range
-- Page numbers = `⌈totalDays / 15⌉`
-
-**Axis 2: Row Overflow Pagination**
-- Page 1: Can fit 7 diet + 6 treatment rows (more space due to admission form)
-- Overflow pages: Can fit 6 diet + 5 treatment rows
-- Distributes remaining rows across new pages
-
-### Page Calculation Example
-**Scenario:** 22-day admission, 8 diet items, 7 medicines
-
-```
-datePages = ⌈22 / 15⌉ = 2 pages
-dietOverflowPages = ⌈(8 - 7) / 6⌉ = ⌈1/6⌉ = 1 page
-treatmentOverflowPages = ⌈(7 - 6) / 5⌉ = ⌈1/5⌉ = 1 page
-totalPages = 2 + 1 + 1 = 4 pages
-```
-
-**Page Layout:**
-```
-Page 1: Days 1-15   | Diet items 1-7 | Treatment items 1-6
-Page 2: Days 16-22  | Diet items 1-7 | Treatment items 1-6
-Page 3: Days 16-22  | Diet item 8     | (empty)
-Page 4: Days 16-22  | (empty)        | Treatment item 7
-```
-
-### Pagination Logic in PrintPDFDesign.jsx
-```javascript
-// Date slice calculation
-if (pageIndex < datePages) {
-  slice = dateCols.slice(pageIndex * 15, (pageIndex + 1) * 15);
-} else {
-  // Use last date page for overflow pages
-  slice = dateCols.slice((datePages - 1) * 15, datePages * 15);
-}
-
-// Row slicing
-if (pageIndex < datePages) {
-  dietSlice = dietRows.slice(0, 7);          // Page 1: items 0-7
-  treatmentSlice = treatmentRows.slice(0, 6); // Page 1: items 0-6
-} else {
-  // Overflow page logic...
-}
-```
-
-## Form Validation & Formatting
-
-### Input Validation Rules
-
-| Field | Rule | Formatter | Example |
-|-------|------|-----------|---------|
-| fileNo | Numeric only | `formatFileNumber` | "VP-123" → "123" |
-| petName | Title case | `formatName` | "max cooper" → "Max Cooper" |
-| ownerName | Title case | `formatName` | "john doe" → "John Doe" |
-| doctor | Title case | `formatName` | "dr. smith" → "Dr. Smith" |
-| cageNo | Uppercase + space | `formatCageNo` | "ip1" → "IP 1" |
-| weight | Decimal number | `formatWeight` | "5.5kg" → "5.5" |
-| diagnosis | Title case | `formatName` | "gastroenteritis" → "Gastroenteritis" |
-| admissionDate | ISO date (not past) | HTML `min={getTodayDate()}` | "2025-01-15" |
-| dischargeDate | After admission | HTML `min={admissionDate}` | "2025-01-20" |
-
-### Required Fields Validation
-```javascript
-const requiredFields = [
-  "fileNo", "petName", "ownerName", "doctor", "assistantName",
-  "cageNo", "diagnosis", "admissionDate", "dischargeDate",
-  "weight", "patientStage"
-];
-
-// Print button enabled only if all required fields complete
-canPrint = dateCols.length > 0 && isAdmissionFormComplete(header)
-```
-
-## Print to PDF
-
-### Browser Print CSS
-All print styling uses Tailwind CSS `print:` prefix:
-
-```jsx
-{/* Hidden on print */}
-<div className="print:hidden">Web only content</div>
-
-{/* Hidden on web, shown on print */}
-<div className="hidden print:block">Print only content</div>
-
-{/* Page break after */}
-<div style={{ pageBreakAfter: isLast ? "auto" : "always" }}>Content</div>
-
-{/* Print-specific styling */}
-<div className="print:text-[10px] print:p-2 print:border">Content</div>
-```
-
-### Print Layout Features
-- **Fixed Header & Footer:** Positioned absolutely on every page
-- **Watermark Logo:** Positioned fixed with low opacity
-- **Page Breaks:** Automatic between pages in `Array.from({ length: totalPages })`
-- **Margins:** Configured in CSS media queries
-- **Font Sizing:** Reduced for print (10px vs 12-16px on web)
-
-### How to Print
-1. Click "Print IP Chart" button
-2. Browser print dialog opens
-3. Select "Save as PDF"
-4. Choose destination folder
-5. PDF is generated with all pages, formatting preserved
-
-### Troubleshooting Print
-- **Blank pages:** Ensure browser print margin is "None"
-- **Missing content:** Check media query styles in `index.css`
-- **Formatting issues:** Verify `print:` classes applied correctly
-- **Manual print:** `Ctrl+P` (Windows) or `Cmd+P` (Mac)
-
-## Development Setup
-
-### 1. Clone & Install
-```bash
-git clone <repo-url>
-cd InPatient-Chart
-npm install
-```
-
-### 2. Start Dev Server
-```bash
-npm run dev
-```
-App runs on `http://localhost:5173`
-
-### 3. Development Workflow
-```bash
-# Watch mode (auto-reload on changes)
-npm run dev
-
-# ESLint check
-npm run lint
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-### 4. Project Structure
-```
-src/
-├── main.jsx                 # React entry (ReactDOM.render)
-├── App.jsx                  # Root component wrapper
-├── index.css               # Global + print CSS
-├── Pages/
-│   └── InPatientChart.jsx  # Main page
-├── components/             # 10 reusable components
-├── utils/                  # 3 utility modules
-└── [other files]
-```
-
-## Common Tasks
-
-### Add a New Form Field
-
-1. **Add to header state** in `InPatientChart.jsx`:
-```javascript
-const [header, setHeader] = useState({
-  // ... existing fields
-  newField: ""
-});
-```
-
-2. **Add InputField component** in `AdmissionForm.jsx`:
-```jsx
-<InputField
-  label="New Field Label"
-  name="newField"
-  val={data.newField}
-  onChange={handleInputChange}
-  readOnly={printMode}
-  formatValue={formatName}  // or other formatter
-/>
-```
-
-3. **Add to validation** in `validations.js`:
-```javascript
-const requiredFields = [
-  // ... existing
-  "newField"
-];
-```
-
-4. **Add formatting logic** in `AdmissionForm.jsx` handleInputChange:
-```javascript
-if (name === "newField") {
-  formattedValue = formatName(value);
-}
-```
-
-### Modify Pagination Settings
-
-Change constants in `PrintPDFDesign.jsx`:
-```javascript
-const DAYS_PER_PAGE = 15;              // Change days per page
-const PAGE_1_DIET_MAX = 7;             // Change page 1 diet capacity
-const PAGE_1_TREATMENT_MAX = 6;        // Change page 1 treatment capacity
-const DIET_OVERFLOW_ROW_LIMIT = 6;     // Change overflow diet capacity
-const TREATMENT_OVERFLOW_ROW_LIMIT = 5; // Change overflow treatment capacity
-```
-
-Then recalculate in the pagination logic section.
-
-### Add New Diet/Treatment Item Type
-
-Modify initial state in `InPatientChart.jsx`:
-```javascript
-const [dietRows, setDietRows] = useState([
-  // ... existing defaults
-  { id: 6, label: "New Item Type", type: "Once" }
-]);
-```
-
-The component handles all CRUD automatically via handlers.
-
-### Change Print Styling
-
-Edit `index.css` media queries:
-```css
-@media print {
-  /* All print-specific CSS */
-  table { font-size: 10px; }
-  .print-page { padding: 0; }
-  /* etc. */
-}
-```
-
-Or use Tailwind `print:` classes directly in JSX:
-```jsx
-<div className="print:text-[10px] print:p-0">Content</div>
-```
-
-## Debugging
-
-### Log Pagination Info
-```javascript
-console.log({
-  totalDays: dateCols.length,
-  datePages,
-  dietRows: dietRows.length,
-  treatmentRows: treatmentRows.length,
-  totalPages
-});
-```
-
-### Check State Updates
-```javascript
-console.log({ header, dietRows, treatmentRows });
-```
-
-### Test Print CSS
-1. Open DevTools
-2. Go to "More tools" → "Rendering"
-3. Enable "Emulate CSS media feature prefers-color-scheme"
-4. Change to "print" mode
-5. Verify styling matches expected print layout
-
-### Browser Print Preview
-1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P`)
-2. Type "Print Preview"
-3. View page as it will print
-
-### Common Issues
-
-| Issue | Debug Method | Fix |
-|-------|--------------|-----|
-| State not updating | Log in handler | Check immutability (spread operator) |
-| Pagination wrong | Log page counts | Verify constants match formula |
-| Print layout broken | DevTools print preview | Check `print:` classes and CSS |
-| Formatting missing | Inspect input onChange | Ensure formatter called |
-| Date calculation error | Log dateCols array | Verify date format (YYYY-MM-DD) |
-
-## Performance Optimization
-
-### Current Optimizations
-- ✅ `React.useMemo` for date range calculation
-- ✅ Immutable state updates (enables React.memo)
-- ✅ Conditional rendering (no empty tables)
-- ✅ No external API calls
-- ✅ Local computation only
-
-### Potential Future Improvements
-- `React.memo` for table components (prevent unnecessary re-renders)
-- `useCallback` for event handlers (avoid function recreation)
-- Virtual scrolling if 100+ rows
-- `useReducer` for complex state logic
-- Code splitting for large applications
-
-### Performance Metrics
-- **Load Time:** <2s (Vite fast refresh)
-- **State Update:** <50ms (immutable updates)
-- **Print Generation:** <1s (browser native)
-- **Memory:** <10MB (minimal dependencies)
-
-## Code Quality
-
-### ESLint Configuration
-```bash
-npm run lint          # Check for errors
-```
-
-File: `eslint.config.js` - React + recommended rules
-
-### Best Practices Applied
-- ✅ No dead code
-- ✅ Immutable state updates
-- ✅ Clear component responsibilities
-- ✅ Comprehensive comments/JSDoc
-- ✅ Consistent naming conventions
-- ✅ Error handling in utilities
-
-## Testing Checklist
-
-- [ ] Form validation works (required fields)
-- [ ] Date range calculations correct
-- [ ] Add/remove rows functional
-- [ ] Pagination calculates correctly
-- [ ] Print dialog opens
-- [ ] PDF layout correct (dates, tables, headers)
-- [ ] Responsive on mobile (< 640px)
-- [ ] No console errors
-- [ ] Browser compatibility tested
-- [ ] Signature block appears (page 1)
-- [ ] Watermark visible on print
-- [ ] Actions column hidden on pages 2+
-- [ ] Data persists during session (not page refresh)
-
-## Quick Reference
-
-```bash
-# Development
-npm install              # Install dependencies
-npm run dev             # Start dev server
-npm run lint            # Check code quality
-
-# Production
-npm run build           # Build optimized bundle
-npm run preview         # Test production build
-
-# Useful keyboard shortcuts
-Ctrl+P / Cmd+P          # Open print dialog
-Ctrl+Shift+I            # Open DevTools
-F12                     # Toggle DevTools
-Ctrl+Shift+P            # DevTools command palette (print preview)
+isOpen              // Boolean to show/hide
+mode               // 'limit' or 'delete-warning'
+tableType          // 'Diet' or 'Treatment'
+dietRowCount/treatmentRowCount  // Current counts
+onClose            // Callback when user acknowledges
 ```
 
 ---
 
-**Last Updated:** December 29, 2025  
-**Status:** Production Ready ✅
+## 💾 State Management
 
-## Architecture Overview
+### Pattern: Local Component State (React Hooks)
+
+The application uses React's built-in `useState` and `useMemo` hooks for state management. No external state library is used.
+
+### State Flow Example: Adding a Diet Row
 
 ```
-App.jsx
-  └── InPatientChart.jsx (State Management & Web UI)
-      ├── WebHeader (Print button, navigation)
-      ├── AdmissionForm (Patient data input)
-      └── PrintPDFDesign (PDF Layout & Pagination)
-          ├── PDFHeader (Every page)
-          ├── AdmissionForm (First page only)
-          ├── DietPlanTable (Dynamic rows)
-          ├── TreatmentPlanTable (Dynamic rows)
-          ├── SignatureSection (First page only)
-          └── PDFFooter (Every page)
+User clicks "Add Item" button
+  ↓
+onDietAdd callback fired
+  ↓
+addRow(setDietRows, dietRows, {label: "", type: "Once"})
+  ↓
+setDietRows updates state with new entry
+  ↓
+Component re-renders
+  ↓
+PrintPDFDesign recalculates allocation
+  ↓
+New row limits displayed
 ```
 
-## Component Responsibilities
+### Allocation Calculation (Memoized)
 
-### InPatientChart.jsx (Web UI + State)
-**Purpose**: Central state management, form handlers, UI orchestration
-
-**Key Responsibilities**:
-- Manage header state (patient info)
-- Manage diet rows state
-- Manage treatment rows state
-- Handle form input changes
-- Add/remove rows dynamically
-- Generate date range
-- Update document title for PDF naming
-
-**State Variables**:
-```javascript
-const [header, setHeader] = useState({
-  fileNo, petName, ownerName, doctor, assistantName,
-  cageNo, diagnosis, admissionDate, dischargeDate,
-  weight, patientStage
-});
-
-const [dietRows, setDietRows] = useState([
-  { id: 1, label: "Food", type: "Once" },
-  { id: 2, label: "Water", type: "Once" },
-  // ... default items
-]);
-
-const [treatmentRows, setTreatmentRows] = useState([
-  { id: 101, label: "", dose: "", type: "Twice" }
-]);
-```
-
-### PrintPDFDesign.jsx (PDF Layout)
-**Purpose**: Handles all PDF page layout, pagination, and print-specific styling
-
-**Key Responsibilities**:
-- Multi-page pagination logic (15 days per page)
-- Row overflow pagination (diet & treatment items)
-- PDF page layout and structure
-- Header/footer placement (conditional)
-- Signature section placement (first page only)
-- Watermark logo rendering
-- Print-specific Tailwind CSS classes
-
-**Props**:
-```javascript
-<PrintPDFDesign
-  dateCols={dateCols}                    // Array of dates
-  header={header}                        // Patient info
-  dietRows={dietRows}                    // Diet items
-  treatmentRows={treatmentRows}          // Treatment items
-  onHeaderChange={handleHeaderChange}    // Callback
-  onDietUpdate={...}                     // Update diet row
-  onDietRemove={...}                     // Remove diet row
-  onDietAdd={...}                        // Add diet row
-  onTreatmentUpdate={...}                // Update treatment row
-  onTreatmentRemove={...}                // Remove treatment row
-  onTreatmentAdd={...}                   // Add treatment row
-  isAdmissionFormComplete={boolean}      // Form validation status
-/>
-```
-
-### AdmissionForm.jsx
-**Purpose**: Patient admission information input
-
-**Features**:
-- Form inputs for patient details
-- Real-time validation
-- Auto-formatting on blur
-- Supports printMode prop for PDF rendering
-
-### DietPlanTable.jsx
-**Purpose**: Diet monitoring table with add/remove capability
-
-**Features**:
-- Dynamic rows with labels and frequencies
-- Add/remove row buttons
-- Date columns for monitoring
-- Modal editable cells
-
-### TreatmentPlanTable.jsx
-**Purpose**: Medication tracking with dosage
-
-**Features**:
-- Medication name and dosage inputs
-- Frequency toggle (Once/Twice)
-- Add/remove rows dynamically
-- Organized layout for tracking
-
-### Utility Components
-| Component | Purpose |
-|-----------|---------|
-| WebHeader | Navigation, print button, logo (web only) |
-| WebFooter | Footer for web interface |
-| PDFHeader | Header for PDF pages (print only) |
-| PDFFooter | Footer for PDF pages (print only) |
-| SignatureSection | Signature area (print only) |
-| NoteUsage | Instruction/empty state |
-
-## State Management Pattern
-
-All state updates use immutable patterns:
+Located in `PrintPDFDesign.jsx`:
 
 ```javascript
-// Update object property
-setHeader({ ...header, [e.target.name]: e.target.value });
-
-// Update array item
-setRows(rows.map(r => r.id === id ? { ...r, [field]: value } : r));
-
-// Remove item
-setRows(rows.filter(r => r.id !== id));
-
-// Add item
-setRows(prev => [...prev, { ...defaultObj, id: ++nextId.current }]);
+const allocation = useMemo(() => {
+  return calculateOptimalAllocation(
+    dietRows.length,
+    treatmentRows.length,
+    11,
+    7,
+    6,
+    ALLOW_SOFT_INDIVIDUAL_LIMIT // true by default
+  );
+}, [dietRows, treatmentRows]);
 ```
 
-## Pagination System
+This ensures allocation is recalculated efficiently whenever row counts change.
 
-### Two-Axis Pagination
+---
 
-**Axis 1: Date-Based**
-- 15 days per page (DAYS_PER_PAGE = 15)
-- Automatically creates new pages for long admissions
-- Each page shows 15 consecutive days
+## 🔄 Development Workflow
 
-**Axis 2: Row Overflow**
-- Max 6-7 diet items on page 1
-- Max 5 treatment items on page 1
-- Extra items continue on new pages (6 per page)
-- Separate pages for overflow
+### Adding a New Feature
 
-**Calculation**:
-```javascript
-const datePages = Math.ceil(dateCols.length / 15);
-const dietOverflowPages = Math.ceil(
-  (dietRows.length - 6) / 6  // Remaining items / capacity
-);
-const totalPages = datePages + dietOverflowPages + treatmentOverflowPages;
-```
+1. **Create/Modify Component**
+   ```bash
+   # Create new component file in src/components/
+   touch src/components/NewFeature.jsx
+   ```
 
-## Form Validation & Formatting
+2. **Implement Feature**
+   - Follow existing component patterns
+   - Use `print:` classes for print styling
+   - Add prop documentation comments
 
-### Validation Functions (src/utils/validations.js)
+3. **Integrate into Page**
+   - Import component in `InPatientChart.jsx`
+   - Pass necessary props and handlers
+   - Test in browser (http://localhost:5173)
 
-```javascript
-// Check if admission form is complete
-isAdmissionFormComplete(header)  // Returns boolean
+4. **Test Print Output**
+   - Press Ctrl+P or Cmd+P
+   - Select "Save as PDF"
+   - Verify A4 formatting
 
-// Auto-format values
-formatName(value)                // Title Case
-formatFileNumber(value)          // Numeric only
-formatCageNo(value)              // Uppercase alphanumeric
-formatWeight(value)              // Numeric with decimals
+5. **Run Linter**
+   ```bash
+   npm run lint
+   ```
 
-// Update document title for PDF naming
-updateDocumentTitle(fileNo, admissionDate)
-```
+### Making Changes to Allocation Logic
 
-### Date Helpers (src/utils/dateHelpers.js)
+1. Edit `calculateOptimalAllocation()` in `PrintPDFDesign.jsx`
+2. Update logic comments
+3. Test with various row count scenarios:
+   - Diet=7, Treatment=1 (max diet)
+   - Diet=1, Treatment=6 (max treatment)
+   - Diet=5, Treatment=1 (mixed)
+4. Verify in browser and PDF output
 
-```javascript
-// Generate array of dates between admission & discharge
-getDatesInRange(startDate, endDate)  // Returns array
+### Styling Guidelines
 
-// Format date for display
-formatDateDDMonYYYY(dateString)      // "01-Jan-2025" format
-```
-
-## Print to PDF
-
-### PrintPDF Utility (src/utils/PrintPDF.js)
-
-Reusable print trigger functions:
-
-```javascript
-// Simple trigger
-import { triggerPrintPDF } from "../utils/PrintPDF";
-<button onClick={triggerPrintPDF}>Print</button>
-
-// With custom options
-import { triggerPrintPDFWithOptions } from "../utils/PrintPDF";
-triggerPrintPDFWithOptions({
-  filename: "patient-chart.pdf",
-  delay: 1000
-});
-
-// Check if print available
-if (isPrintAvailable()) {
-  // Show print button
-}
-```
-
-### Print CSS (Tailwind)
-
-All print styling uses Tailwind `print:` prefix:
-
+**Use Tailwind CSS classes**:
 ```jsx
-<div className="block print:hidden">        {/* Web only */}
-<div className="hidden print:block">        {/* Print only */}
-<div className="print:page-break-after">  {/* Page break */}
+// Good
+<div className="bg-blue-50 border-l-4 border-blue-500 p-3 print:text-xs">
+
+// Avoid custom CSS when possible
+<div style={{backgroundColor: '#f0f9ff'}}>
 ```
 
-## Setting Up Development
+**Print-specific styling**:
+```jsx
+// Elements hidden during print
+<button className="print:hidden">Add Item</button>
 
-### 1. Install Dependencies
-```bash
-npm install
+// Elements that change in print
+<div className="text-base print:text-xs">Content</div>
 ```
 
-### 2. Start Dev Server
-```bash
-npm run dev
-```
+---
 
-### 3. ESLint Check
+## 🔍 Code Quality & Linting
+
+### Running ESLint
+
 ```bash
+# Check all files
 npm run lint
+
+# The linter checks for:
+# - React best practices
+# - Unused variables
+# - Missing dependencies in hooks
+# - Syntax errors
 ```
 
-### 4. Build Production
-```bash
-npm run build
+### Common Linting Issues & Fixes
+
+**Unused variable**
+```javascript
+// Before (Error)
+const result = calculateAllocation();
+
+// After (Fix)
+// Remove if not used, or use it
+const result = calculateAllocation();
+console.log(result);
 ```
 
-## File Structure
+**Missing dependency in useEffect**
+```javascript
+// Before (Error)
+useEffect(() => {
+  console.log(data);
+}, []); // 'data' is missing
 
-```
-src/
-├── main.jsx                      Application entry point
-├── App.jsx                       Root component
-├── index.css                     Global styles
-├── Pages/
-│   └── InPatientChart.jsx       Main page component
-├── components/
-│   ├── PrintPDFDesign.jsx       PDF layout & pagination
-│   ├── AdmissionForm.jsx
-│   ├── DietPlanTable.jsx
-│   ├── TreatmentPlanTable.jsx
-│   ├── SignatureSection.jsx
-│   ├── WebHeader.jsx
-│   ├── WebFooter.jsx
-│   ├── PDFHeader.jsx
-│   ├── PDFFooter.jsx
-│   └── Note-Usage.jsx
-└── utils/
-    ├── PrintPDF.js              Print utilities
-    ├── dateHelpers.js           Date calculations
-    └── validations.js           Form validation & formatting
+// After (Fix)
+useEffect(() => {
+  console.log(data);
+}, [data]);
 ```
 
-## Common Development Tasks
+---
 
-### Add a New Form Field
+## 📝 Common Tasks
 
-1. Add to header state:
+### Task 1: Add a New Patient Information Field
+
+1. Update state in `InPatientChart.jsx`:
 ```javascript
 const [header, setHeader] = useState({
   // ... existing fields
-  newField: ""
+  newField: "",
 });
 ```
 
-2. Add input in AdmissionForm.jsx:
+2. Add input in `AdmissionForm.jsx`:
 ```jsx
 <input
   name="newField"
   value={header.newField}
   onChange={handleHeaderChange}
+  placeholder="New Field"
 />
 ```
 
-3. Add to PDF (optional - in AdmissionForm.jsx printMode):
-```jsx
-{printMode && <p>{newField}: {header.newField}</p>}
-```
+3. Adjust PDF layout in `PrintPDFDesign.jsx` if needed
 
-### Add a New Diet Item Type
+### Task 2: Change Row Limits
 
-Modify the default diet rows in InPatientChart.jsx:
-
+1. Edit `PrintPDFDesign.jsx`:
 ```javascript
-const [dietRows, setDietRows] = useState([
-  // ... existing
-  { id: 6, label: "Medication", type: "Twice" }
-]);
+const calculateOptimalAllocation = (
+  currentDietCount,
+  currentTreatmentCount,
+  totalCapacity = 11,  // Change TT here
+  maxIndividualDiet = 7,  // Or here
+  maxIndividualTreatment = 6,  // Or here
+  ...
+)
 ```
 
-### Modify Pagination
+2. Update documentation strings
+3. Test allocation logic
+4. Run lint and preview
 
-Change constants in PrintPDFDesign.jsx:
+### Task 3: Modify PDF Header/Footer
 
+1. Edit `PDFHeader.jsx` or `PDFFooter.jsx`
+2. Update print-specific styling
+3. Test in PDF preview
+4. Ensure fits in A4 format
+
+### Task 4: Add Validation Rules
+
+1. Edit `src/utils/validations.js`:
 ```javascript
-const DAYS_PER_PAGE = 15;              // Days per page
-const MAX_DIET_ROWS_PER_PAGE = 5;      // Max diet rows
-const MAX_TREATMENT_ROWS_PER_PAGE = 4; // Max treatment rows
-```
-
-## Debugging Tips
-
-### Check State
-```javascript
-console.log({ header, dietRows, treatmentRows });
-```
-
-### Verify Pagination
-```javascript
-console.log({ datePages, dietOverflowPages, totalPages });
-```
-
-### Test Print CSS
-Use Chrome DevTools → More tools → Rendering → Emulate CSS media feature print
-
-### Common Issues
-
-| Issue | Solution |
-|-------|----------|
-| State not updating | Use immutable patterns (spread operator) |
-| Print layout broken | Check Tailwind `print:` classes |
-| Pagination wrong | Verify DAYS_PER_PAGE and row limits |
-| Form values lost | Check onChange handlers are connected |
-
-## Performance Optimization
-
-- **Date memoization**: `dateCols` uses React.useMemo
-- **No unnecessary re-renders**: Only affected components re-render
-- **Minimal state**: Only essential data stored in state
-- **No external APIs**: All data processed locally
-
-## Security Considerations
-
-- ✅ No XSS risk (React escapes output)
-- ✅ No data leakage (browser only)
-- ✅ No authentication needed (standalone app)
-- ✅ Safe with patient data (local processing)
-
-## Browser Support
-
-- Chrome/Chromium 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-
-## Testing Checklist
-
-- [ ] Form validation works (required fields)
-- [ ] Date calculations correct
-- [ ] Add/remove rows works
-- [ ] Print dialog opens
-- [ ] PDF layout correct (15 days/page)
-- [ ] Pagination accurate
-- [ ] Responsive on mobile
-- [ ] No console errors
-- [ ] Browser compatibility tested
-const treatmentOverflowPages = Math.ceil((treatmentRows.length - max) / 5);
-const totalPages = datePages + dietOverflowPages + treatmentOverflowPages;
-```
-
-**Example**: 22-day admission, 8 diet items, 3 meds
-```
-Page 1: Days 1-15  | Diet (5) | Treatment (3)
-Page 2: Days 16-22 | Diet (5) | Treatment (3)
-Page 3: Days 16-22 | Diet (3 overflow) | (empty)
-```
-
-## 🛠️ Utilities
-
-### dateHelpers.js
-
-```javascript
-getDatesInRange(startDate, endDate)
-// Returns: ["1-Jan", "2-Jan", ..., "15-Jan"]
-
-formatDateDDMonYYYY(dateStr)
-// "2025-01-15" → "15-Jan-2025"
-```
-
-### validations.js
-
-```javascript
-formatName(value)          // "john doe" → "John Doe"
-formatFileNumber(value)    // "abc123" → "123"
-formatCageNo(value)        // "ip1" → "IP 1"
-formatWeight(value)        // "5.5kg" → "5.5"
-getTodayDate()             // "2025-12-29"
-isAdmissionFormComplete()  // Validate all fields filled
-updateDocumentTitle()      // Set browser tab title
-```
-
-## 🎨 Styling
-
-**Tailwind conventions**:
-```css
-/* Responsive breakpoints */
-text-xs sm:text-sm lg:text-base   /* Mobile → Desktop */
-
-/* Print styles */
-print:hidden                       /* Hide when printing */
-print:block                        /* Show when printing */
-@media print { ... }              /* Print-specific CSS */
-```
-
-## ⚙️ Setup & Build
-
-```bash
-# Development
-npm run dev          # Start dev server on 5173
-
-# Production
-npm run build        # Optimize & bundle
-npm run preview      # Test production build
-
-# Code quality
-npm run lint         # ESLint check
-```
-
-## 🧪 Testing
-
-### Manual tests
-1. **Simple chart** (≤15 days) → 1 page
-2. **Multi-page** (16-30 days + overflow) → 3-4 pages
-3. **Long admission** (45+ days) → 8+ pages
-
-### Print testing
-- Open browser print dialog (Ctrl+P)
-- Verify Landscape orientation
-- Check page breaks are clean
-- Confirm signature blocks appear
-- Save as PDF
-
-## 📝 Common Tasks
-
-### Add a Form Field
-
-1. Add to header state:
-```javascript
-const [header, setHeader] = useState({
-  // ... existing
-  newField: ""
-});
-```
-
-2. Add InputField component:
-```jsx
-<InputField
-  label="New Field"
-  name="newField"
-  val={data.newField}
-  onChange={onChange}
-  formatValue={formatName}
-/>
-```
-
-3. Add to validation:
-```javascript
-export const isAdmissionFormComplete = (header) => {
-  const required = [..., "newField"];
-  return required.every(f => header[f]?.trim());
+export const validateField = (value) => {
+  // Add your validation logic
+  return isValid;
 };
 ```
 
-### Add a Row Type
-
-1. Create state:
-```javascript
-const [customRows, setCustomRows] = useState([
-  { id: 1, label: "", type: "Once" }
-]);
+2. Use in component:
+```jsx
+const isValid = validateField(inputValue);
+{!isValid && <p className="text-red-500">Error message</p>}
 ```
-
-2. Create table component (copy DietPlanTable pattern)
-
-3. Use row handlers:
-```javascript
-updateRow(setCustomRows, customRows, id, field, value)
-removeRow(setCustomRows, customRows, id)
-addRow(setCustomRows, customRows, { id: 0, label: "", type: "Once" })
-```
-
-### Modify Pagination
-
-Change these constants in InPatientChart.jsx:
-```javascript
-const MAX_DIET_ROWS_PER_PAGE = 5;        // Overflow capacity
-const MAX_TREATMENT_ROWS_PER_PAGE = 4;   // Overflow capacity
-const DAYS_PER_PAGE = 15;                // Date pagination
-```
-
-## 🐛 Debugging
-
-```javascript
-// Log pagination info
-const pages = datePages + dietOverflowPages + treatmentOverflowPages;
-console.log({
-  totalDays: dateCols.length,
-  datePages,
-  dietRows: dietRows.length,
-  treatmentRows: treatmentRows.length,
-  totalPages: pages
-});
-
-// Test in print preview (Ctrl+P)
-// Verify dates advance on date pages
-// Verify dates stay same on overflow pages
-```
-
-## 📦 Dependencies
-
-- **react**: Component framework
-- **react-dom**: DOM rendering
-- **tailwindcss**: Styling
-- **@tailwindcss/vite**: Tailwind bundling
-- **vite**: Build tool
-- **eslint**: Code linting
-
-## ✅ Code Quality
-
-- Zero syntax errors
-- ESLint configured (no warnings)
-- React best practices
-- Immutable state updates
-- No dead code
-- Clear patterns to follow
-
-## 🚀 Performance Notes
-
-Current optimizations:
-- `useMemo` for date calculations
-- Immutable updates for React diffing
-- Conditional rendering (no empty tables)
-
-Future improvements:
-- React.memo for table components
-- Virtual scrolling if 100+ rows
-- useReducer for complex state
 
 ---
 
-**Quick Links**: [README.md](README.md) | [Certification.md](Certification.md)  
-**Status**: Production Ready ✅
+## 🐛 Troubleshooting
+
+### Issue: "npm run dev" fails
+
+**Solution 1**: Clear node_modules and reinstall
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
+```
+
+**Solution 2**: Check Node.js version
+```bash
+node --version  # Should be v16+
+npm --version   # Should be v7+
+```
+
+### Issue: PDF prints incorrectly (cuts off content)
+
+**Solution**:
+1. Check `PrintPDFDesign.jsx` page structure
+2. Ensure total rows don't exceed A4 limits
+3. Verify `print:` CSS classes are applied
+4. Test with different browsers' print settings
+
+### Issue: Linter reports errors but code works
+
+**Common causes**:
+- ESLint cache is stale: `npm run lint -- --cache-file=/dev/null`
+- Missing semicolons: Add them
+- Unused imports: Remove them
+- Wrong syntax: Check React/JSX rules
+
+### Issue: Row allocation not updating
+
+**Solution**:
+1. Check that `calculateOptimalAllocation()` is inside `useMemo`
+2. Verify dependencies array includes `[dietRows, treatmentRows]`
+3. Add console.log to verify allocation is recalculating
+4. Check browser console for errors
+
+### Issue: Print dialog shows blank pages
+
+**Solution**:
+1. Open DevTools (F12) → Print Preview
+2. Check if elements have `display: none` unexpectedly
+3. Remove problematic `print:hidden` classes
+4. Verify page margins in print settings
+
+---
+
+## 📚 Useful Resources
+
+- [React Documentation](https://react.dev)
+- [Tailwind CSS Docs](https://tailwindcss.com/docs)
+- [Vite Documentation](https://vitejs.dev)
+- [ESLint Rules](https://eslint.org/docs/latest/rules)
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch: `git checkout -b feature/name`
+2. Make changes and test
+3. Run linter: `npm run lint`
+4. Commit with clear messages: `git commit -m "Add feature description"`
+5. Push to repository: `git push origin feature/name`
+6. Create Pull Request for review
+
+---
+
+**Last Updated**: December 30, 2025  
+**For Questions**: Contact the development team
