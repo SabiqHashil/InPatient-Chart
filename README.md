@@ -188,4 +188,4 @@ This project is designed for veterinary clinical use. For support or feature req
 ---
 
 **Last Updated**: December 30, 2025  
-**Version**: 0.0.0
+**Version**: 1.0.0
