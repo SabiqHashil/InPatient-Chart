@@ -93,7 +93,7 @@ const TreatmentPlanTable = ({
                         onUpdate(row.id, "label", formatName(e.target.value))
                       }
                       className="w-full bg-transparent outline-none font-bold text-blue-900 placeholder-blue-300 text-xs sm:text-sm"
-                      placeholder="e.g. Paracetamol"
+                      placeholder="Medicine"
                     />
 
                     {/* Dose (optional field below name) */}
@@ -104,7 +104,7 @@ const TreatmentPlanTable = ({
                         onUpdate(row.id, "dose", e.target.value.toUpperCase())
                       }
                       className="w-full bg-transparent outline-none text-[10px] sm:text-xs text-blue-500 font-medium placeholder-gray-400"
-                      placeholder="e.g. 500mg"
+                      placeholder="Dosage"
                     />
                   </div>
                 </td>
