@@ -44,7 +44,7 @@ function InPatientChart() {
   ]);
 
   const [treatmentRows, setTreatmentRows] = useState([
-    { id: 101, label: "", dose: "", type: "Twice" },
+    { id: 101, label: "", dose: "", type: "Once" },
   ]);
 
   const nextId = useRef(1000);
